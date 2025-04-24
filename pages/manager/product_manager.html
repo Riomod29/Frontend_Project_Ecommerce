@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý danh mục</title>
+    <link rel="stylesheet" href="../../assets/css/manager/product_manager.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet"> <!-- Chuông -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+        integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOMt23cez/3paNdF+Z73e1rZ5V5qD9F9CXF4z8z" crossorigin="anonymous">
+    <script src="../../js/category_manager.js"></script>
+</head>
+
+<body>
+    <div class="layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logoth">
+                <img src="../../icons/fire.png" alt="fire">
+                <span class="brand">Ecommerce</span>
+            </div>
+            <nav class="menu">
+                <ul>
+                    <li>
+                        <a href="statistical.html">
+                            <img class="icon" src="../../icons/home.png" alt="home">
+                            Thống kê
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="product_manager.html">
+                            <img class="icon" src="../../icons/class.png" alt="Danh mục">
+                            Danh mục
+                        </a>
+                    </li>
+                    <li>
+                        <a href="product_list.html">
+                            <img class="icon" src="../../icons/folder.png" alt="Sản phẩm">
+                            Sản phẩm
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+        <!-- Main content -->
+        <div class="main-content">
+            <header class="header">
+                <div class="header-right">
+                    <i class="ri-notification-3-line bell"></i>
+                    <div class="user">
+                        <img src="../../images/avata.webp" alt="avatar">
+                    </div>
+                </div>
+                <div class="header-main">
+                    <span class="title">Danh mục</span>
+                    <button class="btn-add" id="btnOpenAddCategory">Thêm mới danh mục</button>
+                </div>
+            </header>
+            <div class="content">
+                <div class="toolbar">
+                    <select>
+                        <option selected>Đang hoạt động</option>
+                        <option>Tất cả</option>
+                        <option>Ngừng hoạt động</option>
+                    </select>
+                    <input type="text" placeholder="Tìm kiếm danh mục theo tên">
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Mã danh mục <i class="ri-arrow-down-s-line sort"></i></th>
+                            <th>Tên danh mục <i class="ri-arrow-down-s-line sort"></i></th>
+                            <th>Trạng thái</th>
+                            <th>Chức năng</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>DM001</td>
+                            <td>Quần áo</td>
+                            <td><span class="status active">● Đang hoạt động</span></td>
+                            <td>
+                                <span class="icon-btn delete"></span>
+                                <span class="icon-btn edit"></span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="pagination">
+                    <button>&lt;</button>
+                    <button>1</button>
+                    <button>2</button>
+                    <button class="active">3</button>
+                    <button>4</button>
+                    <button>5</button>
+                    <button>6</button>
+                    <button>7</button>
+                    <button>...</button>
+                    <button>20</button>
+                    <button>&gt;</button>
+                </div>
+                <!-- Modal thêm mới danh mục -->
+                <div class="modal" id="modalAddCategory" style="display:none;">
+                    <div class="modal-content">
+                        <span class="close" id="btnCloseAddCategory">&times;</span>
+                        <h2>Thêm mới danh mục</h2>
+                        <form id="formAddCategory">
+                            <div class="form-group">
+                                <label for="categoryCode">Mã danh mục <span style="color:#ff4d4f">*</span></label>
+                                <input type="text" id="categoryCode" name="categoryCode">
+                            </div>
+                            <div class="form-group">
+                                <label for="categoryName">Tên danh mục <span style="color:#ff4d4f">*</span></label>
+                                <input type="text" id="categoryName" name="categoryName">
+                            </div>
+                            <div class="form-group">
+                                <label>Trạng thái</label>
+                                <div class="radio-group">
+                                    <label><input type="radio" name="categoryStatus" value="active" checked> Đang hoạt
+                                        động</label>
+                                    <label><input type="radio" name="categoryStatus" value="inactive"> Ngừng hoạt
+                                        động</label>
+                                </div>
+                            </div>
+                            <button type="button" class="btn-cancel" id="btnCancelAddCategory">Hủy</button>
+                            <button type="submit" class="btn-submit">Thêm</button>
+                        </form>
+                    </div>
+                </div>
+                <!-- Modal cập nhật danh mục -->
+                <div class="modal" id="modalUpdateCategory" style="display:none;">
+                    <div class="modal-content">
+                        <span class="close" id="btnCloseUpdateCategory">&times;</span>
+                        <h2>Cập nhật danh mục</h2>
+                        <form id="formUpdateCategory">
+                            <div class="form-group">
+                                <label for="updateCategoryCode">Mã danh mục <span style="color:#ff4d4f">*</span></label>
+                                <input type="text" id="updateCategoryCode" name="updateCategoryCode" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="updateCategoryName">Tên danh mục <span
+                                        style="color:#ff4d4f">*</span></label>
+                                <input type="text" id="updateCategoryName" name="updateCategoryName">
+                            </div>
+                            <div class="form-group">
+                                <label>Trạng thái</label>
+                                <div class="radio-group">
+                                    <label><input type="radio" name="updateCategoryStatus" value="active"> Đang hoạt
+                                        động</label>
+                                    <label><input type="radio" name="updateCategoryStatus" value="inactive"> Ngừng hoạt
+                                        động</label>
+                                </div>
+                            </div>
+                            <button type="button" class="btn-cancel" id="btnCancelUpdateCategory">Hủy</button>
+                            <button type="submit" class="btn-submit">Lưu</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../../assets/js/manager/product_manager.js"></script>
+</body>
+
+</html>

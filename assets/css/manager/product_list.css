@@ -1,0 +1,292 @@
+/* ===================
+   Layout tổng thể
+   =================== */
+body {
+  margin: 0;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: #f9fafb;
+}
+.layout {
+  display: flex;
+  min-height: 100vh;
+}
+.sidebar {
+  width: 220px;
+  background: #fff;
+  border-right: 1px solid #ececec;
+  padding: 0 0 0 0;
+}
+
+/* ===================
+   Logo & Sidebar
+   =================== */
+.logo {
+  display: flex;
+  align-items: center;
+  padding: 24px 0 16px 24px;
+  font-weight: 600;
+  font-size: 18px;
+}
+.logoth {
+  display: flex;
+  align-items: center;
+  padding: 24px 20px 16px 20px;
+  font-weight: bold;
+  font-size: 18px;
+}
+.logo-icon {
+  width: 28px;
+  height: 28px;
+  margin-right: 10px;
+  display: inline-block;
+  vertical-align: middle;
+}
+.logo .dot {
+  width: 10px;
+  height: 10px;
+  background: #ff4d4f;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 8px;
+}
+.logo .brand {
+  color: #222;
+}
+.menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.menu ul li {
+  margin-bottom: 4px;
+}
+.menu ul li a {
+  display: flex;
+  align-items: center;
+  padding: 8px 0 8px 24px;
+  color: #222;
+  text-decoration: none;
+  border-radius: 6px;
+  transition: background 0.2s;
+  font-size: 15px;
+}
+
+/* ===================
+   Active menu highlight
+   =================== */
+.menu ul li.active a {
+  background: #d0e7ff;
+  color: #1976d2;
+}
+.menu ul li.active a .icon {
+  filter: brightness(0) saturate(100%) invert(41%) sepia(97%) saturate(749%)
+    hue-rotate(183deg) brightness(97%) contrast(101%);
+}
+.menu ul li a .icon {
+  width: 20px;
+  margin-right: 10px;
+  transition: filter 0.2s;
+}
+
+/* ===================
+   Main Content & Header
+   =================== */
+.main-content {
+  flex: 1;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding: 32px 40px 0 40px;
+  gap: 18px;
+  background: transparent;
+}
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.bell {
+  font-size: 22px;
+  color: #bdbdbd;
+  cursor: pointer;
+  margin-right: 4px;
+  transition: color 0.2s;
+}
+.bell:hover {
+  color: #1976d2;
+}
+.user img {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #ececec;
+}
+.header-main {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.title {
+  font-size: 22px;
+  font-weight: 600;
+  color: #222;
+}
+.btn-add {
+  background: #1976d2;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 18px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-add:hover {
+  background: #1256a3;
+}
+
+/* ===================
+   Toolbar, Content & Table
+   =================== */
+.toolbar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.toolbar select,
+.toolbar input[type="text"] {
+  padding: 7px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 15px;
+  background: #fafbfc;
+  outline: none;
+}
+.toolbar input[type="text"] {
+  min-width: 220px;
+}
+.content {
+  background: #fff;
+  margin: 24px 32px 0 32px;
+  border-radius: 8px;
+  padding: 24px 24px 0 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 16px;
+}
+th,
+td {
+  padding: 14px 8px;
+  text-align: left;
+  font-size: 15px;
+}
+th {
+  background: #f6f8fa;
+  color: #222;
+  font-weight: 600;
+  border-bottom: 1.5px solid #e3e6eb;
+  position: relative;
+}
+th .sort {
+  font-size: 18px;
+  color: #7b8794;
+  margin-left: 4px;
+  vertical-align: middle;
+  position: relative;
+  top: 2px;
+  cursor: pointer;
+}
+tbody tr {
+  border-bottom: 1px solid #f0f0f0;
+  transition: background 0.2s;
+}
+tbody tr:hover {
+  background: #f5faff;
+}
+.status {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 500;
+}
+.status.active {
+  background: #e8f5e9;
+  color: #43a047;
+}
+.status.inactive {
+  background: #ffebee;
+  color: #e53935;
+}
+.icon-btn {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  margin-right: 8px;
+  vertical-align: middle;
+  cursor: pointer;
+}
+.icon-btn.delete {
+  background: url('data:image/svg+xml;utf8,<svg fill="red" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>')
+    no-repeat center/18px;
+}
+.icon-btn.edit {
+  background: url('data:image/svg+xml;utf8,<svg fill="orange" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75l11.06-11.06-3.75-3.75L3 17.25zM20.71 7.04a1.003 1.003 0 0 0 0-1.42l-2.34-2.34a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z"/></svg>')
+    no-repeat center/18px;
+  margin-right: 0;
+}
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 24px;
+}
+.pagination button {
+  border: 1px solid #e0e0e0;
+  background: #fff;
+  color: #222;
+  padding: 5px 12px;
+  border-radius: 4px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.pagination button.active,
+.pagination button:hover {
+  background: #1976d2;
+  color: #fff;
+  border-color: #1976d2;
+}
+
+/* ===================
+   Responsive
+   =================== */
+@media (max-width: 900px) {
+  .sidebar {
+    display: none;
+  }
+  .main-content {
+    padding: 0;
+  }
+  .content {
+    margin: 0;
+    border-radius: 0;
+  }
+  .header {
+    padding: 24px 16px 0 16px;
+  }
+}

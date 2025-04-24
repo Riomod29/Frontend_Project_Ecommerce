@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý sản phẩm</title>
+    <link rel="stylesheet" href="../../assets/css/manager/product_list.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet"> <!-- Chuông -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+        integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOMt23cez/3paNdF+Z73e1rZ5V5qD9F9CXF4z8z" crossorigin="anonymous">
+    <script src="../../js/product_manager.js"></script>
+</head>
+
+<body>
+    <div class="layout">
+        <!-- Sidebar -->
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logoth">
+                <img src="../../icons/fire.png" alt="fire">
+                <span class="brand">Ecommerce</span>
+            </div>
+            <nav class="menu">
+                <ul>
+                    <li>
+                        <a href="statistical.html">
+                            <img class="icon" src="../../icons/home.png" alt="home">
+                            Thống kê
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="product_manager.html">
+                            <img class="icon" src="../../icons/class.png" alt="Danh mục">
+                            Danh mục
+                        </a>
+                    </li>
+                    <li>
+                        <a href="product_list.html">
+                            <img class="icon" src="../../icons/folder.png" alt="Sản phẩm">
+                            Sản phẩm
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+        <!-- Main content -->
+        <div class="main-content">
+            <header class="header">
+                <div class="header-right">
+                    <i class="ri-notification-3-line bell"></i>
+                    <div class="user">
+                        <img src="../../images/avata.webp" alt="avatar">
+                    </div>
+                </div>
+                <div class="header-main">
+                    <span class="title">Sản phẩm</span>
+                    <button class="btn-add">Thêm mới sản phẩm</button>
+                </div>
+            </header>
+            <div class="content">
+                <div class="toolbar">
+                    <select>
+                        <option selected>Đang kinh doanh</option>
+                        <option>Tất cả</option>
+                        <option>Ngừng kinh doanh</option>
+                    </select>
+                    <input type="text" placeholder="Tìm kiếm sản phẩm theo tên">
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Mã sản phẩm <i class="ri-arrow-down-s-line sort"></i></th>
+                            <th>Tên sản phẩm <i class="ri-arrow-down-s-line sort"></i></th>
+                            <th>Giá</th>
+                            <th>Danh mục</th>
+                            <th>Trạng thái</th>
+                            <th>Chức năng</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>SP001</td>
+                            <td>Áo thun nam</td>
+                            <td>199.000đ</td>
+                            <td>Quần áo</td>
+                            <td><span class="status active">● Đang kinh doanh</span></td>
+                            <td>
+                                <span class="icon-btn delete"></span>
+                                <span class="icon-btn edit"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>SP002</td>
+                            <td>Giày sneaker</td>
+                            <td>499.000đ</td>
+                            <td>Giày dép</td>
+                            <td><span class="status inactive">● Ngừng kinh doanh</span></td>
+                            <td>
+                                <span class="icon-btn delete"></span>
+                                <span class="icon-btn edit"></span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="pagination">
+                    <button>&lt;</button>
+                    <button>1</button>
+                    <button>2</button>
+                    <button class="active">3</button>
+                    <button>4</button>
+                    <button>5</button>
+                    <button>6</button>
+                    <button>7</button>
+                    <button>...</button>
+                    <button>20</button>
+                    <button>&gt;</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

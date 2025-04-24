@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chỉnh sửa danh mục</title>
+    <link rel="stylesheet" href="../../assets/css/manager/update_product.css">
+</head>
+
+<body>
+    <!-- Form chỉnh sửa danh mục -->
+    <div class="category-form-container">
+        <h2>Chỉnh sửa danh mục</h2>
+        <form id="formUpdateCategory">
+            <div class="form-group">
+                <label for="updateCategoryCode">Mã danh mục <span style="color:#ff4d4f">*</span></label>
+                <input type="text" id="updateCategoryCode" name="updateCategoryCode" readonly>
+            </div>
+            <div class="form-group">
+                <label for="updateCategoryName">Tên danh mục <span style="color:#ff4d4f">*</span></label>
+                <input type="text" id="updateCategoryName" name="updateCategoryName">
+            </div>
+            <div class="form-group">
+                <label>Trạng thái</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="updateCategoryStatus" value="active"> Đang hoạt động</label>
+                    <label><input type="radio" name="updateCategoryStatus" value="inactive"> Ngừng hoạt động</label>
+                </div>
+            </div>
+            <button type="submit" class="btn-submit">Lưu</button>
+            <button type="reset" class="btn-cancel">Hủy</button>
+        </form>
+    </div>
+    <script>
+        // Xử lý submit form chỉnh sửa danh mục
+        const formUpdateCategory = document.getElementById('formUpdateCategory');
+        if (formUpdateCategory) {
+            formUpdateCategory.onsubmit = function (e) {
+                e.preventDefault();
+                const code = formUpdateCategory.updateCategoryCode.value.trim();
+                const name = formUpdateCategory.updateCategoryName.value.trim();
+                if (!code || !name) {
+                    alert('Vui lòng nhập đầy đủ thông tin bắt buộc!');
+                    return false;
+                }
+                alert('Cập nhật danh mục thành công!');
+                // Có thể thêm logic cập nhật thực tế ở đây
+                return false;
+            };
+            // Reset form khi nhấn Hủy
+            const btnCancel = formUpdateCategory.querySelector('.btn-cancel');
+            if (btnCancel) {
+                btnCancel.onclick = function () {
+                    formUpdateCategory.reset();
+                };
+            }
+        }
+    </script>
+</body>
+
+</html>

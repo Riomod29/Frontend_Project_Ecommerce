@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="../../assets/css/manager/create_product.css">
+</head>
+
+<body>
+    <!-- Form thêm mới danh mục -->
+    <div class="category-form-container">
+        <h2>Thêm mới danh mục</h2>
+        <form id="formAddCategory">
+            <div class="form-group">
+                <label for="categoryCode">Mã danh mục <span style="color:#ff4d4f">*</span></label>
+                <input type="text" id="categoryCode" name="categoryCode">
+            </div>
+            <div class="form-group">
+                <label for="categoryName">Tên danh mục <span style="color:#ff4d4f">*</span></label>
+                <input type="text" id="categoryName" name="categoryName">
+            </div>
+            <div class="form-group">
+                <label>Trạng thái</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="categoryStatus" value="active" checked> Đang hoạt động</label>
+                    <label><input type="radio" name="categoryStatus" value="inactive"> Ngừng hoạt động</label>
+                </div>
+            </div>
+            <button type="submit" class="btn-submit">Thêm</button>
+            <button type="reset" class="btn-cancel">Hủy</button>
+        </form>
+    </div>
+    <script>
+        // Xử lý submit form thêm mới danh mục
+        const formAddCategory = document.getElementById('formAddCategory');
+        if (formAddCategory) {
+            formAddCategory.onsubmit = function (e) {
+                e.preventDefault();
+                const code = formAddCategory.categoryCode.value.trim();
+                const name = formAddCategory.categoryName.value.trim();
+                if (!code || !name) {
+                    alert('Vui lòng nhập đầy đủ thông tin bắt buộc!');
+                    return false;
+                }
+                alert('Thêm mới danh mục thành công!');
+                formAddCategory.reset();
+                return false;
+            };
+            // Reset form khi nhấn Hủy
+            const btnCancel = formAddCategory.querySelector('.btn-cancel');
+            if (btnCancel) {
+                btnCancel.onclick = function () {
+                    formAddCategory.reset();
+                };
+            }
+        }
+    </script>
+</body>
+
+</html>

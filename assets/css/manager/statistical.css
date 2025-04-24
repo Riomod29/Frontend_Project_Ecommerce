@@ -1,0 +1,147 @@
+/* ===================
+   Layout tổng thể
+   =================== */
+body {
+  margin: 0;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: #f9fafb;
+}
+.layout {
+  display: flex;
+  min-height: 100vh;
+}
+.sidebar {
+  width: 220px;
+  background: #fff;
+  border-right: 1px solid #ececec;
+  padding: 0;
+}
+
+/* ===================
+   Logo & Sidebar
+   =================== */
+.logoth {
+  display: flex;
+  align-items: center;
+  padding: 24px 20px 16px 20px;
+  font-weight: bold;
+  font-size: 18px;
+}
+.logoth img {
+  width: 48px;
+  height: 48px;
+  display: inline-block;
+  vertical-align: middle;
+}
+.logoth .brand {
+  color: #222;
+}
+.menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.menu ul li {
+  margin-bottom: 4px;
+}
+.menu ul li a {
+  display: flex;
+  align-items: center;
+  padding: 8px 0 8px 24px;
+  color: #222;
+  text-decoration: none;
+  border-radius: 6px;
+  transition: background 0.2s;
+  font-size: 15px;
+}
+.menu ul li.active a {
+  background: #d0e7ff;
+  color: #1976d2;
+}
+.menu ul li.active a .icon {
+  filter: brightness(0) saturate(100%) invert(41%) sepia(97%) saturate(749%)
+    hue-rotate(183deg) brightness(97%) contrast(101%);
+}
+.menu ul li a .icon {
+  width: 20px;
+  margin-right: 10px;
+  transition: filter 0.2s;
+}
+
+/* ===================
+   Main Content & Header
+   =================== */
+.main-content {
+  flex: 1;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding: 32px 40px 0 40px;
+  gap: 18px;
+  background: transparent;
+}
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.bell {
+  font-size: 22px;
+  color: #bdbdbd;
+  cursor: pointer;
+  margin-right: 4px;
+  transition: color 0.2s;
+}
+.bell:hover {
+  color: #1976d2;
+}
+.user img {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #ececec;
+}
+.title {
+  display: block;
+  margin-top: 32px;
+  margin-left: 16px;
+  font-size: 24px;
+  font-weight: 600;
+  color: #222;
+}
+
+/* ===================
+   Content
+   =================== */
+.content {
+  background: #fff;
+  margin: 24px 32px 0 32px;
+  border-radius: 8px;
+  padding: 24px 24px 0 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+/* ===================
+   Responsive
+   =================== */
+@media (max-width: 900px) {
+  .sidebar {
+    display: none;
+  }
+  .main-content {
+    padding: 0;
+  }
+  .content {
+    margin: 0;
+    border-radius: 0;
+  }
+  .header {
+    padding: 24px 16px 0 16px;
+  }
+}
