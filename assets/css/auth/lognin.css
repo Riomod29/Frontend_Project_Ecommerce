@@ -1,0 +1,118 @@
+/* Reset mặc định */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f9f9f9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+/* Container chính */
+.form-container {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+h2 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+p {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 1rem;
+  padding-bottom: 50px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Nhóm các ô nhập liệu */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+input[type="email"],
+input[type="password"] {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  box-sizing: border-box;
+}
+
+input[type="email"]::placeholder,
+input[type="password"]::placeholder {
+  color: #aaa;
+}
+
+/* Checkbox */
+.form-group.checkbox-group {
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.checkbox-group {
+  font-size: 0.9rem;
+}
+
+.checkbox-group input[type="checkbox"] {
+  margin-right: 0.5rem;
+}
+
+.checkbox-group a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.checkbox-group a:hover {
+  text-decoration: underline;
+}
+
+/* Nút Đăng nhập */
+.btn {
+  background-color: #007bff;
+  color: #fff;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  text-align: center;
+}
+
+.btn:hover {
+  background-color: #0056b3;
+}
+
+/* Liên kết Đăng ký */
+form p {
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+form p a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+form p a:hover {
+  text-decoration: underline;
+}

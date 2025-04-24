@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý danh mục</title>
+    <link rel="stylesheet" href="../../assets/css/home/product_manager.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+        integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOMt23cez/3paNdF+Z73e1rZ5V5qD9F9CXF4z8z" crossorigin="anonymous">
+</head>
+
+<body>
+    <div class="layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <img src="../../images/fire.png" alt="fire" class="logo-icon">
+                <span class="brand">Ecommerce</span>
+            </div>
+            <nav class="menu">
+                <ul>
+                    <li>
+                        <a href="#">
+                            <span class="icon">&#8962;</span>
+                            Thống kê
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="#">
+                            <span class="icon">&#128196;</span>
+                            Danh mục
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <span class="icon">&#128722;</span>
+                            Sản phẩm
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+        <!-- Main content -->
+        <div class="main-content">
+            <header class="header">
+                <div class="header-right">
+                    <i class="ri-notification-3-line bell"></i>
+                    <div class="user">
+                        <img src="../../images/avata.webp" alt="avatar">
+                    </div>
+                </div>
+                <div class="header-main">
+                    <span style="font-weight: bold;" class="title">Danh mục</span>
+                    <button class="btn-add">Thêm mới danh mục</button>
+                </div>
+            </header>
+            <div class="content">
+                <div class="toolbar">
+                    <select>
+                        <option selected>Đang hoạt động</option>
+                        <option>Tất cả</option>
+                        <option>Ngừng hoạt động</option>
+                    </select>
+                    <input type="text" placeholder="Tìm kiếm danh mục theo tên">
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Mã danh mục <i class="ri-arrow-down-s-line sort"></i></th>
+                            <th>Tên danh mục <i class="ri-arrow-down-s-line sort"></i></th>
+                            <th>Trạng thái</th>
+                            <th>Chức năng</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>DM001</td>
+                            <td>Quần áo</td>
+                            <td><span class="status active">● Đang hoạt động</span></td>
+                            <td>
+                                <span class="icon-btn delete"></span>
+                                <span class="icon-btn edit"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>DM002</td>
+                            <td>Kính mắt</td>
+                            <td><span class="status inactive">● Ngừng hoạt động</span></td>
+                            <td>
+                                <span class="icon-btn delete"></span>
+                                <span class="icon-btn edit"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>DM003</td>
+                            <td>Giày dép</td>
+                            <td><span class="status active">● Đang hoạt động</span></td>
+                            <td>
+                                <span class="icon-btn delete"></span>
+                                <span class="icon-btn edit"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>DM004</td>
+                            <td>Thời trang nam</td>
+                            <td><span class="status inactive">● Ngừng hoạt động</span></td>
+                            <td>
+                                <span class="icon-btn delete"></span>
+                                <span class="icon-btn edit"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>DM005</td>
+                            <td>Thời trang nữ</td>
+                            <td><span class="status inactive">● Ngừng hoạt động</span></td>
+                            <td>
+                                <span class="icon-btn delete"></span>
+                                <span class="icon-btn edit"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>DM006</td>
+                            <td>Hoa quả</td>
+                            <td><span class="status inactive">● Ngừng hoạt động</span></td>
+                            <td>
+                                <span class="icon-btn delete"></span>
+                                <span class="icon-btn edit"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>DM007</td>
+                            <td>Rau</td>
+                            <td><span class="status active">● Đang hoạt động</span></td>
+                            <td>
+                                <span class="icon-btn delete"></span>
+                                <span class="icon-btn edit"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>DM008</td>
+                            <td>Điện thoại</td>
+                            <td><span class="status inactive">● Ngừng hoạt động</span></td>
+                            <td>
+                                <span class="icon-btn delete"></span>
+                                <span class="icon-btn edit"></span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="pagination">
+                    <button>&lt;</button>
+                    <button>1</button>
+                    <button>2</button>
+                    <button class="active">3</button>
+                    <button>4</button>
+                    <button>5</button>
+                    <button>6</button>
+                    <button>7</button>
+                    <button>8</button>
+                    <button>9</button>
+                    <button>20</button>
+                    <button>&gt;</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
