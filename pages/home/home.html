@@ -29,7 +29,8 @@
             <div class="header-icons">
                 <a href="#"><i class="far fa-heart"></i></a>
                 <a href="#"><i class="fas fa-shopping-cart"></i></a>
-                <a href="#"><i class="far fa-user"></i></a>
+                <a href="../../pages/auth/lognin.html" id="user-icon"><i class="far fa-user"></i> <span
+                        id="user-name"></span></a>
             </div>
         </div>
         <div class="header-menu">
@@ -361,6 +362,17 @@
     </footer>
 
     <script src="../../assets/js/home/home.js"></script>
+    <!-- Modal xác nhận đăng xuất -->
+    <div id="logout-modal" class="modal-logout" style="display:none;">
+        <div class="modal-logout-content">
+            <h3>Xác nhận đăng xuất</h3>
+            <p>Bạn có chắc chắn muốn đăng xuất không?</p>
+            <div class="modal-logout-actions">
+                <button id="confirm-logout" class="btn-logout-confirm">Đăng xuất</button>
+                <button id="cancel-logout" class="btn-logout-cancel">Hủy</button>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>

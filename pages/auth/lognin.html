@@ -1,41 +1,56 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng nhập</title>
+    <!-- Liên kết đến file CSS riêng cho trang đăng nhập -->
     <link rel="stylesheet" href="../../assets/css/auth/lognin.css">
 </head>
 
 <body>
-    <nav style="text-align:center; margin-bottom: 20px;">
-        <a href="../manager/statistical.html">Thống kê</a> |
-        <a href="../manager/category_manager.html">Danh mục</a> |
-        <a href="../manager/product_manager.html">Sản phẩm</a>
-    </nav>
+    <!-- Container chính chứa form đăng nhập -->
     <div class="form-container">
         <h2>Đăng nhập</h2>
         <p>Đăng nhập tài khoản để sử dụng hệ thống quản lý</p>
-        <form>
+
+        <!-- Container hiển thị thông báo lỗi hoặc thành công - mặc định ẩn -->
+        <div id="message-container" class="message-info" style="display: none;"></div>
+
+        <!-- Form đăng nhập - sẽ được xử lý bởi JavaScript -->
+        <form id="loginForm">
+            <!-- Trường nhập email -->
             <div class="form-group">
                 <label>Email</label>
                 <input type="email" id="email" name="email">
             </div>
+
+            <!-- Trường nhập mật khẩu -->
             <div class="form-group">
                 <label>Mật khẩu</label>
                 <input type="password" id="password" name="password">
             </div>
+
+            <!-- Lựa chọn "Nhớ tài khoản" và liên kết "Quên mật khẩu" -->
             <div class="form-group checkbox-group">
+                <!-- Checkbox "Nhớ tài khoản" - khi được chọn sẽ lưu thông tin đăng nhập vào localStorage -->
                 <label><input type="checkbox" id="remember" name="remember">Nhớ tài khoản</label>
                 <a href="#" class="forgot-password">Quên mật khẩu?</a>
             </div>
+
+            <!-- Nút đăng nhập -->
             <div class="form-group">
                 <button type="submit" class="btn">Đăng nhập</button>
             </div>
+
+            <!-- Liên kết đến trang đăng ký -->
             <p>Bạn chưa có tài khoản? <a href="register.html">Đăng ký</a></p>
         </form>
     </div>
+
+    <!-- Liên kết đến file JavaScript xử lý logic đăng nhập -->
+    <script src="../../assets/js/auth/lognin.js"></script>
 </body>
 
 </html>

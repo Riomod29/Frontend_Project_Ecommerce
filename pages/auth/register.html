@@ -1,58 +1,75 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng ký tài khoản</title>
+    <!-- Liên kết đến file CSS riêng cho trang đăng ký -->
     <link rel="stylesheet" href="../../assets/css/auth/register.css">
 </head>
 
 <body>
-    <nav style="text-align:center; margin-bottom: 20px;">
-        <a href="../manager/statistical.html">Thống kê</a> |
-        <a href="../manager/category_manager.html">Danh mục</a> |
-        <a href="../manager/product_manager.html">Sản phẩm</a>
-    </nav>
+    <!-- Container chính chứa form đăng ký -->
     <div class="form-container">
         <h2>Đăng ký tài khoản</h2>
         <p>Đăng ký tài khoản để sử dụng dịch vụ</p>
+
+        <!-- Container hiển thị thông báo - mặc định ẩn và sẽ hiển thị khi có xử lý form -->
+        <div id="message-container" class="message-success" style="display: none;"></div>
+
+        <!-- Form đăng ký với các trường thông tin cần thiết -->
         <form id="registerForm">
+            <!-- Trường nhập họ tên - chia thành 2 cột để tối ưu giao diện -->
             <div class="form-group row">
+                <!-- Cột bên trái cho họ và tên đệm -->
                 <div class="form-item">
                     <label class="bold">Họ và tên đệm</label>
                     <input type="text" id="lastname" name="lastname">
                 </div>
+                <!-- Cột bên phải cho tên -->
                 <div class="form-item">
                     <label class="bold">Tên</label>
                     <input type="text" id="firstname" name="firstname">
                 </div>
             </div>
+
+            <!-- Trường nhập email - sẽ được dùng làm định danh (ID) cho tài khoản -->
             <div class="form-group">
                 <label class="bold">Email</label>
                 <input type="email" id="email" name="email" placeholder="you@company.com">
             </div>
+
+            <!-- Trường nhập mật khẩu -->
             <div class="form-group">
                 <label class="bold">Mật khẩu</label>
                 <input type="password" id="password" name="password">
             </div>
+
+            <!-- Trường xác nhận mật khẩu - để đảm bảo người dùng nhập đúng -->
             <div class="form-group">
                 <label class="bold">Xác nhận mật khẩu</label>
                 <input type="password" id="confirmPassword" name="confirmPassword">
             </div>
+
+            <!-- Checkbox đồng ý với điều khoản sử dụng -->
             <div class="form-group checkbox-group">
                 <label><input type="checkbox" id="terms" name="terms" class="bold">Bạn đồng ý với <a href="#">chính sách
-                        và điều
-                        khoản</a></label>
+                        và điều khoản</a></label>
             </div>
+
+            <!-- Nút đăng ký -->
             <div class="form-group">
                 <button type="submit" class="btn">Đăng ký</button>
             </div>
-            <!-- Liên kết Đăng nhập -->
+
+            <!-- Liên kết đến trang đăng nhập nếu người dùng đã có tài khoản -->
             <p>Bạn đã có tài khoản? <a href="./lognin.html">Đăng nhập</a></p>
         </form>
     </div>
-    <script src="../../assets/js/auth.js"></script>
+
+    <!-- Liên kết đến file JavaScript xử lý logic đăng ký -->
+    <script src="../../assets/js/auth/register.js"></script>
 </body>
 
 </html>

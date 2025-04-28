@@ -1,4 +1,4 @@
-/* ===================
+/* /* ===================
    Layout tổng thể
    =================== */
 body {
@@ -81,15 +81,18 @@ body {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  padding: 32px 40px 0 40px;
-  gap: 18px;
+  padding: 20px 40px 0 40px;
+  gap: 12px;
   background: transparent;
 }
+
 .header-right {
   display: flex;
   align-items: center;
   gap: 16px;
+  position: relative;
 }
+
 .bell {
   font-size: 22px;
   color: #bdbdbd;
@@ -107,13 +110,57 @@ body {
   object-fit: cover;
   border: 1px solid #ececec;
 }
+
+/* Nút Log out giống hệt hình mẫu mới */
+.logout-btn {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  background: #ffffff;
+  color: #344054;
+  border: 1px solid #d0d5dd;
+  border-radius: 100px; /* Bo tròn hoàn toàn ở hai bên */
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 10px 16px;
+  width: 100%;
+  max-width: 240px;
+  height: 44px;
+  margin-top: 6px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  text-align: left;
+  box-shadow: 0px 1px 2px rgba(16, 24, 40, 0.05);
+}
+
+.logout-icon {
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 8px;
+  opacity: 0.6; /* Giảm độ sáng của biểu tượng logout */
+  transform: rotate(90deg); /* Xoay biểu tượng logout 90 độ sang phải*/
+}
+
+.logout-btn:hover {
+  background-color: #f9fafb;
+}
+
 .title {
   display: block;
-  margin-top: 32px;
+  margin-top: 12px;
   margin-left: 16px;
   font-size: 24px;
   font-weight: 600;
   color: #222;
+  align-self: flex-start;
+}
+
+.header-main {
+  align-self: flex-start;
 }
 
 /* ===================
@@ -144,4 +191,80 @@ body {
   .header {
     padding: 24px 16px 0 16px;
   }
+}
+
+/* Modal xác nhận đăng xuất */
+.logout-confirm-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+
+.logout-modal-content {
+  background-color: #fff;
+  padding: 24px;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 360px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  text-align: center;
+}
+
+.logout-modal-content h3 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  font-size: 1.25rem;
+  color: #111927;
+}
+
+.logout-modal-content p {
+  margin-bottom: 24px;
+  color: #4d5761;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.logout-modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.btn-confirm {
+  padding: 8px 20px;
+  background-color: #f44336;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.btn-confirm:hover {
+  background-color: #d32f2f;
+}
+
+.btn-cancel {
+  padding: 8px 20px;
+  background-color: #f1f5f9;
+  color: #111927;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.btn-cancel:hover {
+  background-color: #e2e8f0;
 }

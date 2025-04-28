@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quản lý danh mục</title>
     <link rel="stylesheet" href="../../assets/css/manager/product_manager.css">
+    <link rel="stylesheet" href="../../assets/css/manager/statistical.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet"> <!-- Chuông -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
         integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOMt23cez/3paNdF+Z73e1rZ5V5qD9F9CXF4z8z" crossorigin="anonymous">
@@ -22,13 +23,13 @@
             </div>
             <nav class="menu">
                 <ul>
-                    <li>
+                    <li class="active">
                         <a href="statistical.html">
                             <img class="icon" src="../../icons/home.png" alt="home">
                             Thống kê
                         </a>
                     </li>
-                    <li class="active">
+                    <li>
                         <a href="product_manager.html">
                             <img class="icon" src="../../icons/class.png" alt="Danh mục">
                             Danh mục
@@ -52,6 +53,9 @@
                         <img src="../../images/avata.webp" alt="avatar">
                     </div>
                 </div>
+                <button id="logout-btn" class="logout-btn">
+                    <img src="../../icons/logout.png" class="logout-icon" alt="Logout"> Log out
+                </button>
                 <div class="header-main">
                     <span class="title">Thống kê</span>
                 </div>
@@ -60,6 +64,56 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal xác nhận đăng xuất -->
+    <div id="logout-confirm-modal" class="logout-confirm-modal" style="display:none;">
+        <div class="logout-modal-content">
+            <h3>Xác nhận</h3>
+            <p>Bạn có chắc chắn muốn đăng xuất?</p>
+            <div class="logout-modal-actions">
+                <button id="confirm-logout" class="btn-confirm">Đăng xuất</button>
+                <button id="cancel-logout" class="btn-cancel">Hủy</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Xử lý sự kiện đăng xuất
+        const logoutBtn = document.getElementById('logout-btn');
+        const logoutModal = document.getElementById('logout-confirm-modal');
+        const confirmLogoutBtn = document.getElementById('confirm-logout');
+        const cancelLogoutBtn = document.getElementById('cancel-logout');
+
+        if (logoutBtn) {
+            logoutBtn.onclick = function () {
+                // Hiển thị modal xác nhận
+                logoutModal.style.display = 'flex';
+            };
+        }
+
+        // Xử lý khi người dùng xác nhận đăng xuất
+        if (confirmLogoutBtn) {
+            confirmLogoutBtn.onclick = function () {
+                sessionStorage.removeItem('currentUser');
+                localStorage.removeItem('rememberedUser');
+                window.location.href = '../../pages/auth/lognin.html';
+            };
+        }
+
+        // Xử lý khi người dùng hủy đăng xuất
+        if (cancelLogoutBtn) {
+            cancelLogoutBtn.onclick = function () {
+                logoutModal.style.display = 'none';
+            };
+        }
+
+        // Đóng modal khi click ra ngoài
+        window.onclick = function (event) {
+            if (event.target == logoutModal) {
+                logoutModal.style.display = 'none';
+            }
+        };
+    </script>
 </body>
 
 </html>

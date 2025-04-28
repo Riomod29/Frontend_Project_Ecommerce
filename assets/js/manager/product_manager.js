@@ -118,38 +118,417 @@ function bindEditButtons() {
 // Khởi tạo bảng khi load trang
 window.addEventListener('DOMContentLoaded', renderCategoryTable);
 document.addEventListener('DOMContentLoaded', function () {
-    // Đóng modal cập nhật khi nhấn nút đóng hoặc Hủy
-    document.getElementById('btnCloseUpdateCategory').onclick = function () {
-        document.getElementById('modalUpdateCategory').style.display = 'none';
-    };
-    document.getElementById('btnCancelUpdateCategory').onclick = function () {
-        document.getElementById('modalUpdateCategory').style.display = 'none';
-    };
-});
-// Xử lý cập nhật danh mục
-const formUpdate = document.getElementById('formUpdateCategory');
-if (formUpdate) {
-    formUpdate.onsubmit = function (e) {
-        e.preventDefault();
-        const code = formUpdate.updateCategoryCode.value.trim();
-        const name = formUpdate.updateCategoryName.value.trim();
-        const status = formUpdate.querySelector('input[name="updateCategoryStatus"]:checked')?.value || 'active';
-        if (!code || !name) {
-            alert('Vui lòng nhập đầy đủ thông tin bắt buộc!');
-            return false;
+    // Initialize products if not exists
+    if (!localStorage.getItem('products')) {
+        // Initial sample data
+        const initialProducts = [
+            {
+                id: 'SP001',
+                name: 'Iphone 12 Pro',
+                price: 12000000,
+                quantity: 10,
+                discount: 0,
+                status: 'active',
+                description: 'Apple iPhone 12 Pro'
+            },
+            {
+                id: 'SP002',
+                name: 'Samsung Galaxy X20',
+                price: 21000000,
+                quantity: 100,
+                discount: 5,
+                status: 'inactive',
+                description: 'Samsung Galaxy X20'
+            },
+            {
+                id: 'SP003',
+                name: 'Phone 8 Plus',
+                price: 5000000,
+                quantity: 10,
+                discount: 0,
+                status: 'active',
+                description: 'Phone 8 Plus'
+            },
+            {
+                id: 'SP004',
+                name: 'Iphone 14 Pro max',
+                price: 25000000,
+                quantity: 20,
+                discount: 2,
+                status: 'inactive',
+                description: 'Apple iPhone 14 Pro Max'
+            },
+            {
+                id: 'SP005',
+                name: 'Oppo X3',
+                price: 2000000,
+                quantity: 10,
+                discount: 5,
+                status: 'inactive',
+                description: 'Oppo X3 smartphone'
+            },
+            {
+                id: 'SP006',
+                name: 'Iphone 16',
+                price: 20000000,
+                quantity: 20,
+                discount: 3,
+                status: 'inactive',
+                description: 'Apple iPhone 16'
+            },
+            {
+                id: 'SP007',
+                name: 'Iphone 7 Plus',
+                price: 4000000,
+                quantity: 10,
+                discount: 4,
+                status: 'active',
+                description: 'Apple iPhone 7 Plus'
+            },
+            {
+                id: 'SP008',
+                name: 'Samsung S20 Ultra',
+                price: 30000000,
+                quantity: 15,
+                discount: 2,
+                status: 'inactive',
+                description: 'Samsung S20 Ultra'
+            }
+        ];
+        localStorage.setItem('products', JSON.stringify(initialProducts));
+    }
+
+    // DOM elements
+    const productTableBody = document.getElementById('productTableBody');
+    const paginationContainer = document.getElementById('pagination');
+    const searchInput = document.getElementById('searchInput');
+    const searchBtn = document.getElementById('searchBtn');
+    const filterStatusDropdown = document.getElementById('filterStatus');
+    const addProductBtn = document.querySelector('.add-product-btn');
+    const productModal = new bootstrap.Modal(document.getElementById('productModal'));
+    const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+    const logoutModal = new bootstrap.Modal(document.getElementById('logoutModal'));
+    const saveProductBtn = document.getElementById('saveProductBtn');
+    const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+    const confirmLogoutBtn = document.getElementById('confirmLogoutBtn');
+    const logoutBtn = document.getElementById('logout-btn');
+
+    // Variables
+    let currentPage = 1;
+    const itemsPerPage = 5;
+    let currentProducts = [];
+    let editingProductId = null;
+    let productToDelete = null;
+    let statusFilter = 'all';
+
+    // Initialize the page
+    loadProducts();
+
+    // Event listeners
+    searchBtn.addEventListener('click', function () {
+        filterProducts();
+    });
+
+    searchInput.addEventListener('keyup', function (e) {
+        if (e.key === 'Enter') {
+            filterProducts();
         }
-        let categories = JSON.parse(localStorage.getItem('categories') || '[]');
-        const idx = categories.findIndex(c => c.code === code);
-        if (idx !== -1) {
-            categories[idx].name = name;
-            categories[idx].status = status;
-            localStorage.setItem('categories', JSON.stringify(categories));
-            renderCategoryTable();
-            document.getElementById('modalUpdateCategory').style.display = 'none';
-            alert('Cập nhật danh mục thành công!');
+    });
+
+    document.querySelectorAll('.dropdown-menu[aria-labelledby="filterStatus"] .dropdown-item').forEach(item => {
+        item.addEventListener('click', function (e) {
+            e.preventDefault();
+            statusFilter = this.getAttribute('data-status');
+            filterStatusDropdown.textContent = this.textContent;
+            filterProducts();
+        });
+    });
+
+    addProductBtn.addEventListener('click', function () {
+        resetProductForm();
+        document.getElementById('productModalLabel').textContent = 'Thêm mới sản phẩm';
+        productModal.show();
+    });
+
+    saveProductBtn.addEventListener('click', function () {
+        saveProduct();
+    });
+
+    confirmDeleteBtn.addEventListener('click', function () {
+        if (productToDelete) {
+            deleteProduct(productToDelete);
+        }
+        deleteModal.hide();
+    });
+
+    logoutBtn.addEventListener('click', function () {
+        logoutModal.show();
+    });
+
+    confirmLogoutBtn.addEventListener('click', function () {
+        // Simulate logout
+        window.location.href = '../../index.html';
+    });
+
+    // Functions
+    function loadProducts() {
+        const allProducts = JSON.parse(localStorage.getItem('products')) || [];
+        currentProducts = allProducts;
+        filterProducts();
+    }
+
+    function filterProducts() {
+        const searchTerm = searchInput.value.toLowerCase();
+        let filtered = currentProducts;
+
+        if (searchTerm) {
+            filtered = filtered.filter(product =>
+                product.name.toLowerCase().includes(searchTerm) ||
+                product.id.toLowerCase().includes(searchTerm)
+            );
+        }
+
+        if (statusFilter !== 'all') {
+            filtered = filtered.filter(product => product.status === statusFilter);
+        }
+
+        displayProducts(filtered);
+    }
+
+    function displayProducts(products) {
+        // Calculate pagination
+        const totalPages = Math.ceil(products.length / itemsPerPage);
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const paginatedProducts = products.slice(startIndex, startIndex + itemsPerPage);
+
+        // Clear current table
+        productTableBody.innerHTML = '';
+
+        // Display products
+        if (paginatedProducts.length === 0) {
+            productTableBody.innerHTML = '<tr><td colspan="7" class="text-center">Không có sản phẩm nào</td></tr>';
         } else {
-            alert('Không tìm thấy danh mục để cập nhật!');
+            paginatedProducts.forEach(product => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${product.id}</td>
+                    <td>${product.name}</td>
+                    <td>${formatCurrency(product.price)}</td>
+                    <td>${product.quantity}</td>
+                    <td>${product.discount}%</td>
+                    <td>
+                        <span class="status ${product.status === 'active' ? 'active' : 'inactive'}">
+                            ${product.status === 'active' ? '● Đang hoạt động' : '● Ngừng hoạt động'}
+                        </span>
+                    </td>
+                    <td class="action-btns">
+                        <button class="btn-delete" data-id="${product.id}"><i class="fas fa-trash"></i></button>
+                        <button class="btn-edit" data-id="${product.id}"><i class="fas fa-edit"></i></button>
+                    </td>
+                `;
+                productTableBody.appendChild(row);
+            });
+
+            // Add event listeners for edit and delete buttons
+            document.querySelectorAll('.btn-edit').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const productId = this.getAttribute('data-id');
+                    openEditProductModal(productId);
+                });
+            });
+
+            document.querySelectorAll('.btn-delete').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    productToDelete = this.getAttribute('data-id');
+                    deleteModal.show();
+                });
+            });
         }
-        return false;
-    };
-}
+
+        // Update pagination
+        updatePagination(totalPages);
+    }
+
+    function updatePagination(totalPages) {
+        paginationContainer.innerHTML = '';
+
+        // Previous button
+        const prevLi = document.createElement('li');
+        prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+        const prevLink = document.createElement('a');
+        prevLink.className = 'page-link';
+        prevLink.href = '#';
+        prevLink.innerHTML = '&lt;';
+        prevLink.addEventListener('click', function (e) {
+            e.preventDefault();
+            if (currentPage > 1) {
+                currentPage--;
+                filterProducts();
+            }
+        });
+        prevLi.appendChild(prevLink);
+        paginationContainer.appendChild(prevLi);
+
+        // Page buttons
+        let startPage = Math.max(1, currentPage - 2);
+        let endPage = Math.min(totalPages, startPage + 4);
+
+        if (endPage - startPage < 4 && startPage > 1) {
+            startPage = Math.max(1, endPage - 4);
+        }
+
+        for (let i = startPage; i <= endPage; i++) {
+            const pageLi = document.createElement('li');
+            pageLi.className = `page-item ${i === currentPage ? 'active' : ''}`;
+            const pageLink = document.createElement('a');
+            pageLink.className = 'page-link';
+            pageLink.href = '#';
+            pageLink.textContent = i;
+            pageLink.addEventListener('click', function (e) {
+                e.preventDefault();
+                currentPage = i;
+                filterProducts();
+            });
+            pageLi.appendChild(pageLink);
+            paginationContainer.appendChild(pageLi);
+        }
+
+        // If there are more pages, show ellipsis
+        if (endPage < totalPages) {
+            const ellipsisLi = document.createElement('li');
+            ellipsisLi.className = 'page-item disabled';
+            const ellipsisLink = document.createElement('a');
+            ellipsisLink.className = 'page-link';
+            ellipsisLink.href = '#';
+            ellipsisLink.innerHTML = '...';
+            ellipsisLi.appendChild(ellipsisLink);
+            paginationContainer.appendChild(ellipsisLi);
+
+            // Last page
+            const lastLi = document.createElement('li');
+            lastLi.className = 'page-item';
+            const lastLink = document.createElement('a');
+            lastLink.className = 'page-link';
+            lastLink.href = '#';
+            lastLink.textContent = totalPages;
+            lastLink.addEventListener('click', function (e) {
+                e.preventDefault();
+                currentPage = totalPages;
+                filterProducts();
+            });
+            lastLi.appendChild(lastLink);
+            paginationContainer.appendChild(lastLi);
+        }
+
+        // Next button
+        const nextLi = document.createElement('li');
+        nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+        const nextLink = document.createElement('a');
+        nextLink.className = 'page-link';
+        nextLink.href = '#';
+        nextLink.innerHTML = '&gt;';
+        nextLink.addEventListener('click', function (e) {
+            e.preventDefault();
+            if (currentPage < totalPages) {
+                currentPage++;
+                filterProducts();
+            }
+        });
+        nextLi.appendChild(nextLink);
+        paginationContainer.appendChild(nextLi);
+    }
+
+    function openEditProductModal(productId) {
+        const product = currentProducts.find(p => p.id === productId);
+        if (product) {
+            editingProductId = productId;
+            document.getElementById('productModalLabel').textContent = 'Chỉnh sửa sản phẩm';
+            document.getElementById('productCode').value = product.id;
+            document.getElementById('productCode').disabled = true;
+            document.getElementById('productName').value = product.name;
+            document.getElementById('productPrice').value = product.price;
+            document.getElementById('productQuantity').value = product.quantity;
+            document.getElementById('productDiscount').value = product.discount;
+            document.getElementById('productStatus').value = product.status;
+            document.getElementById('productDescription').value = product.description || '';
+            productModal.show();
+        }
+    }
+
+    function resetProductForm() {
+        editingProductId = null;
+        document.getElementById('productCode').disabled = false;
+        document.getElementById('productForm').reset();
+    }
+
+    function saveProduct() {
+        // Get form values
+        const productCode = document.getElementById('productCode').value;
+        const productName = document.getElementById('productName').value;
+        const productPrice = parseInt(document.getElementById('productPrice').value);
+        const productQuantity = parseInt(document.getElementById('productQuantity').value);
+        const productDiscount = parseInt(document.getElementById('productDiscount').value);
+        const productStatus = document.getElementById('productStatus').value;
+        const productDescription = document.getElementById('productDescription').value;
+
+        // Validate form
+        if (!productCode || !productName || isNaN(productPrice) || isNaN(productQuantity)) {
+            alert('Vui lòng nhập đầy đủ thông tin sản phẩm');
+            return;
+        }
+
+        // Get all products
+        const allProducts = JSON.parse(localStorage.getItem('products')) || [];
+
+        // If editing
+        if (editingProductId) {
+            const index = allProducts.findIndex(p => p.id === editingProductId);
+            if (index !== -1) {
+                allProducts[index] = {
+                    id: productCode,
+                    name: productName,
+                    price: productPrice,
+                    quantity: productQuantity,
+                    discount: productDiscount,
+                    status: productStatus,
+                    description: productDescription
+                };
+            }
+        } else {
+            // If adding new, check if ID already exists
+            if (allProducts.some(p => p.id === productCode)) {
+                alert('Mã sản phẩm đã tồn tại');
+                return;
+            }
+
+            // Add new product
+            allProducts.push({
+                id: productCode,
+                name: productName,
+                price: productPrice,
+                quantity: productQuantity,
+                discount: productDiscount,
+                status: productStatus,
+                description: productDescription
+            });
+        }
+
+        // Save to localStorage
+        localStorage.setItem('products', JSON.stringify(allProducts));
+
+        // Hide modal and reload products
+        productModal.hide();
+        loadProducts();
+    }
+
+    function deleteProduct(productId) {
+        let allProducts = JSON.parse(localStorage.getItem('products')) || [];
+        allProducts = allProducts.filter(product => product.id !== productId);
+        localStorage.setItem('products', JSON.stringify(allProducts));
+        loadProducts();
+    }
+
+    function formatCurrency(amount) {
+        return new Intl.NumberFormat('vi-VN').format(amount) + ' đ';
+    }
+});
