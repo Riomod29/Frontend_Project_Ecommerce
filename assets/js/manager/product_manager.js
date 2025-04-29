@@ -78,45 +78,278 @@ function clearFormError() {
         }
     });
 }
-// Hiển thị danh mục lên bảng
-function renderCategoryTable() {
+
+// Biến để lưu trạng thái phân trang
+let currentPage = 1;
+const itemsPerPage = 5;
+let filteredCategories = [];
+
+// Xử lý lọc danh mục
+function filterCategories() {
     let categories = JSON.parse(localStorage.getItem('categories') || '[]');
+    const searchInput = document.querySelector('.toolbar input[type="text"]');
+    const statusSelect = document.querySelector('.toolbar select');
+
+    if (searchInput && statusSelect) {
+        const searchTerm = searchInput.value.toLowerCase();
+        const statusFilter = statusSelect.value;
+
+        filteredCategories = categories.filter(category => {
+            // Lọc theo từ khóa tìm kiếm
+            const matchesSearch = !searchTerm ||
+                category.name.toLowerCase().includes(searchTerm) ||
+                category.code.toLowerCase().includes(searchTerm);
+
+            // Lọc theo trạng thái
+            let matchesStatus = true;
+            if (statusFilter === 'Đang hoạt động') {
+                matchesStatus = category.status === 'active';
+            } else if (statusFilter === 'Ngừng hoạt động') {
+                matchesStatus = category.status === 'inactive';
+            }
+
+            return matchesSearch && matchesStatus;
+        });
+
+        renderPaginatedCategories();
+    }
+}
+
+// Hiển thị danh mục theo trang
+function renderPaginatedCategories() {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const paginatedCategories = filteredCategories.slice(startIndex, endIndex);
+
     const tbody = document.querySelector('table tbody');
     if (!tbody) return;
-    tbody.innerHTML = categories.map(c => `
-    <tr>
-        <td>${c.code}</td>
-        <td>${c.name}</td>
-        <td><span class="status ${c.status === 'active' ? 'active' : 'inactive'}">● ${c.status === 'active' ? 'Đang hoạt động' : 'Ngừng hoạt động'}</span></td>
-        <td>
-            <span class="icon-btn delete"></span>
-            <span class="icon-btn edit"></span>
-        </td>
-    </tr>
-    `).join('');
+
+    tbody.innerHTML = '';
+
+    if (paginatedCategories.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align: center;">Không có dữ liệu</td></tr>';
+    } else {
+        paginatedCategories.forEach(c => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${c.code}</td>
+                <td>${c.name}</td>
+                <td><span class="status ${c.status === 'active' ? 'active' : 'inactive'}">● ${c.status === 'active' ? 'Đang hoạt động' : 'Ngừng hoạt động'}</span></td>
+                <td>
+                    <span class="icon-btn delete" data-id="${c.code}"></span>
+                    <span class="icon-btn edit" data-id="${c.code}"></span>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+
+    updatePagination();
     bindEditButtons();
+    bindDeleteButtons();
 }
-// Hiển thị lại sự kiện cho icon-btn.edit sau khi render lại bảng
-function bindEditButtons() {
-    document.querySelectorAll('.icon-btn.edit').forEach(function (btn) {
+
+// Cập nhật hiển thị phân trang
+function updatePagination() {
+    const pagination = document.querySelector('.pagination');
+    if (!pagination) return;
+
+    const totalPages = Math.ceil(filteredCategories.length / itemsPerPage);
+    pagination.innerHTML = '';
+
+    // Nút Previous
+    const prevButton = document.createElement('button');
+    prevButton.innerHTML = '&lt;';
+    prevButton.disabled = currentPage === 1;
+    prevButton.addEventListener('click', () => {
+        if (currentPage > 1) {
+            currentPage--;
+            renderPaginatedCategories();
+        }
+    });
+    pagination.appendChild(prevButton);
+
+    // Hiển thị các trang
+    const maxVisiblePages = 7;
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+    if (endPage - startPage + 1 < maxVisiblePages) {
+        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+
+    // Thêm trang 1
+    if (startPage > 1) {
+        addPageButton(1);
+
+        // Thêm dấu ... nếu cần
+        if (startPage > 2) {
+            const ellipsis = document.createElement('button');
+            ellipsis.textContent = '...';
+            ellipsis.disabled = true;
+            pagination.appendChild(ellipsis);
+        }
+    }
+
+    // Thêm các trang giữa
+    for (let i = startPage; i <= endPage; i++) {
+        addPageButton(i);
+    }
+
+    // Thêm trang cuối
+    if (endPage < totalPages) {
+        // Thêm dấu ... nếu cần
+        if (endPage < totalPages - 1) {
+            const ellipsis = document.createElement('button');
+            ellipsis.textContent = '...';
+            ellipsis.disabled = true;
+            pagination.appendChild(ellipsis);
+        }
+
+        addPageButton(totalPages);
+    }
+
+    // Nút Next
+    const nextButton = document.createElement('button');
+    nextButton.innerHTML = '&gt;';
+    nextButton.disabled = currentPage === totalPages || totalPages === 0;
+    nextButton.addEventListener('click', () => {
+        if (currentPage < totalPages) {
+            currentPage++;
+            renderPaginatedCategories();
+        }
+    });
+    pagination.appendChild(nextButton);
+
+    // Hàm tạo nút cho từng trang
+    function addPageButton(pageNumber) {
+        const button = document.createElement('button');
+        button.textContent = pageNumber;
+        if (pageNumber === currentPage) {
+            button.className = 'active';
+        }
+        button.addEventListener('click', () => {
+            currentPage = pageNumber;
+            renderPaginatedCategories();
+        });
+        pagination.appendChild(button);
+    }
+}
+
+// Thêm sự kiện xóa danh mục
+function bindDeleteButtons() {
+    document.querySelectorAll('.icon-btn.delete').forEach(btn => {
         btn.onclick = function () {
-            const row = btn.closest('tr');
-            const code = row.children[0].textContent.trim();
-            const name = row.children[1].textContent.trim();
-            const statusText = row.children[2].textContent.trim();
-            document.getElementById('modalUpdateCategory').style.display = 'block';
-            document.getElementById('updateCategoryCode').value = code;
-            document.getElementById('updateCategoryName').value = name;
-            if (statusText.includes('Đang hoạt động')) {
-                document.querySelector('input[name="updateCategoryStatus"][value="active"]').checked = true;
-            } else {
-                document.querySelector('input[name="updateCategoryStatus"][value="inactive"]').checked = true;
+            const categoryCode = this.getAttribute('data-id');
+            if (confirm('Bạn có chắc chắn muốn xóa danh mục này không?')) {
+                let categories = JSON.parse(localStorage.getItem('categories') || '[]');
+                categories = categories.filter(c => c.code !== categoryCode);
+                localStorage.setItem('categories', JSON.stringify(categories));
+                filterCategories();
             }
         };
     });
 }
+
+// Hiển thị danh mục lên bảng
+function renderCategoryTable() {
+    // Khởi tạo dữ liệu mẫu nếu chưa có
+    if (!localStorage.getItem('categories')) {
+        const sampleCategories = [
+            { code: 'DM001', name: 'Điện thoại', status: 'active' },
+            { code: 'DM002', name: 'Laptop', status: 'active' },
+            { code: 'DM003', name: 'Máy tính bảng', status: 'active' },
+            { code: 'DM004', name: 'Phụ kiện', status: 'active' },
+            { code: 'DM005', name: 'Đồng hồ', status: 'inactive' },
+            { code: 'DM006', name: 'Quần áo', status: 'active' },
+            { code: 'DM007', name: 'Giày dép', status: 'inactive' },
+            { code: 'DM008', name: 'Túi xách', status: 'active' },
+            { code: 'DM009', name: 'Mỹ phẩm', status: 'inactive' },
+            { code: 'DM010', name: 'Thực phẩm', status: 'active' },
+            { code: 'DM011', name: 'Đồ gia dụng', status: 'active' },
+            { code: 'DM012', name: 'Sách', status: 'inactive' }
+        ];
+        localStorage.setItem('categories', JSON.stringify(sampleCategories));
+    }
+
+    filterCategories();
+}
+
+// Bắt sự kiện khi thay đổi lọc trạng thái
+const statusSelect = document.querySelector('.toolbar select');
+if (statusSelect) {
+    statusSelect.addEventListener('change', filterCategories);
+}
+
+// Bắt sự kiện tìm kiếm
+const searchInput = document.querySelector('.toolbar input[type="text"]');
+if (searchInput) {
+    searchInput.addEventListener('input', filterCategories);
+}
+
+// Hiển thị lại sự kiện cho icon-btn.edit sau khi render lại bảng
+function bindEditButtons() {
+    document.querySelectorAll('.icon-btn.edit').forEach(function (btn) {
+        btn.onclick = function () {
+            const categoryCode = this.getAttribute('data-id');
+            let categories = JSON.parse(localStorage.getItem('categories') || '[]');
+            const category = categories.find(c => c.code === categoryCode);
+
+            if (category) {
+                const modalUpdate = document.getElementById('modalUpdateCategory');
+                document.getElementById('updateCategoryCode').value = category.code;
+                document.getElementById('updateCategoryName').value = category.name;
+
+                if (category.status === 'active') {
+                    document.querySelector('input[name="updateCategoryStatus"][value="active"]').checked = true;
+                } else {
+                    document.querySelector('input[name="updateCategoryStatus"][value="inactive"]').checked = true;
+                }
+
+                modalUpdate.style.display = 'block';
+
+                // Xử lý đóng modal
+                document.getElementById('btnCloseUpdateCategory').onclick = () => {
+                    modalUpdate.style.display = 'none';
+                };
+
+                // Xử lý hủy cập nhật
+                document.getElementById('btnCancelUpdateCategory').onclick = () => {
+                    modalUpdate.style.display = 'none';
+                };
+
+                // Xử lý form cập nhật
+                const updateForm = document.getElementById('formUpdateCategory');
+                updateForm.onsubmit = function (e) {
+                    e.preventDefault();
+
+                    const updatedName = document.getElementById('updateCategoryName').value.trim();
+                    const updatedStatus = document.querySelector('input[name="updateCategoryStatus"]:checked')?.value || 'active';
+
+                    if (!updatedName) {
+                        alert('Tên danh mục không được để trống');
+                        return;
+                    }
+
+                    // Cập nhật danh mục
+                    const categoryIndex = categories.findIndex(c => c.code === categoryCode);
+                    if (categoryIndex !== -1) {
+                        categories[categoryIndex].name = updatedName;
+                        categories[categoryIndex].status = updatedStatus;
+                        localStorage.setItem('categories', JSON.stringify(categories));
+                        modalUpdate.style.display = 'none';
+                        filterCategories();
+                    }
+                };
+            }
+        };
+    });
+}
+
 // Khởi tạo bảng khi load trang
 window.addEventListener('DOMContentLoaded', renderCategoryTable);
+
+// Phần còn lại của mã JS (cho sản phẩm)
 document.addEventListener('DOMContentLoaded', function () {
     // Initialize products if not exists
     if (!localStorage.getItem('products')) {
