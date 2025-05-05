@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
-    // Initialize products if not exists
+    // Initialize products if not exists - Khởi tạo sản phẩm nếu chưa tồn tại
     if (!localStorage.getItem('products')) {
-        // Initial sample data exactly as shown in images
+        // Initial sample data exactly as shown in images - Dữ liệu mẫu ban đầu như trong hình ảnh
         const initialProducts = [
             {
                 id: 'SP001',
@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded', function () {
         localStorage.setItem('products', JSON.stringify(initialProducts));
     }
 
-    // DOM Elements
+    // DOM Elements - Các phần tử DOM
     const productTableBody = document.getElementById('productTableBody');
     const pagination = document.getElementById('pagination');
     const searchInput = document.getElementById('searchInput');
@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const statusFilterBtn = document.getElementById('statusFilterBtn');
     const addProductBtn = document.getElementById('addProductBtn');
 
-    // Modal elements
+    // Modal elements - Các phần tử modal
     const productModal = document.getElementById('productModal');
     const deleteModal = document.getElementById('deleteModal');
     const closeModal = document.getElementById('closeModal');
@@ -114,8 +114,14 @@ document.addEventListener('DOMContentLoaded', function () {
     const cancelBtn = document.getElementById('cancelBtn');
     const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
     const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+    const productToDeleteSpan = document.getElementById('productToDelete');
 
-    // Form elements
+    // Success notification elements
+    const successNotification = document.getElementById('successNotification');
+    const successMessage = document.getElementById('successMessage');
+    const closeSuccessBtn = document.getElementById('closeSuccessBtn');
+
+    // Form elements - Các phần tử form
     const productForm = document.getElementById('productForm');
     const productCode = document.getElementById('productCode');
     const productName = document.getElementById('productName');
@@ -126,7 +132,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const productImage = document.getElementById('productImage');
     const productDescription = document.getElementById('productDescription');
 
-    // Variables
+    // Variables - Các biến
     let products = JSON.parse(localStorage.getItem('products')) || [];
     let currentPage = 1;
     const productsPerPage = 8;
@@ -134,13 +140,14 @@ document.addEventListener('DOMContentLoaded', function () {
     let statusFilter = 'all';
     let currentProductId = null;
     let productToDelete = null;
+    let productNameToDelete = null;
 
-    // Initialize the page
+    // Initialize the page - Khởi tạo trang
     displayProducts();
     setupEventListeners();
 
     function setupEventListeners() {
-        // Search
+        // Search - Tìm kiếm
         searchBtn.addEventListener('click', function () {
             displayProducts();
         });
@@ -151,7 +158,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
-        // Category filter
+        // Category filter - Lọc theo danh mục
         document.querySelectorAll('#categoryDropdown a').forEach(item => {
             item.addEventListener('click', function (e) {
                 e.preventDefault();
@@ -163,7 +170,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
 
-        // Status filter
+        // Status filter - Lọc theo trạng thái
         document.querySelectorAll('#statusDropdown a').forEach(item => {
             item.addEventListener('click', function (e) {
                 e.preventDefault();
@@ -175,45 +182,53 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
 
-        // Add product button
+        // Add product button - Nút thêm sản phẩm
         addProductBtn.addEventListener('click', function () {
             openProductModal();
         });
 
-        // Close product modal
+        // Close product modal - Đóng modal sản phẩm
         closeModal.addEventListener('click', function () {
             productModal.style.display = 'none';
         });
 
-        // Close delete modal
+        // Close delete modal - Đóng modal xóa
         closeDeleteModal.addEventListener('click', function () {
             deleteModal.style.display = 'none';
         });
 
-        // Save product
+        // Save product - Lưu sản phẩm
         saveProductBtn.addEventListener('click', function () {
             saveProduct();
         });
 
-        // Cancel button in product modal
+        // Cancel button in product modal - Nút hủy trong modal sản phẩm
         cancelBtn.addEventListener('click', function () {
             productModal.style.display = 'none';
         });
 
-        // Confirm delete
+        // Confirm delete - Xác nhận xóa
         confirmDeleteBtn.addEventListener('click', function () {
             if (productToDelete) {
                 deleteProduct(productToDelete);
+
+                // Show success notification
+                showSuccessNotification('Xóa sản phẩm thành công');
             }
             deleteModal.style.display = 'none';
         });
 
-        // Cancel delete
+        // Cancel delete - Hủy xóa
         cancelDeleteBtn.addEventListener('click', function () {
             deleteModal.style.display = 'none';
         });
 
-        // Close modals when clicking outside
+        // Close success notification
+        closeSuccessBtn.addEventListener('click', function () {
+            hideSuccessNotification();
+        });
+
+        // Close modals when clicking outside - Đóng modal khi nhấp bên ngoài
         window.addEventListener('click', function (event) {
             if (event.target === productModal) {
                 productModal.style.display = 'none';
@@ -225,34 +240,34 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function displayProducts() {
-        // Get search value
+        // Get search value - Lấy giá trị tìm kiếm
         const searchValue = searchInput.value.toLowerCase();
 
-        // Filter products
+        // Filter products - Lọc sản phẩm
         let filteredProducts = products.filter(product => {
-            // Search filter
+            // Search filter - Lọc theo từ khóa tìm kiếm
             const matchesSearch = searchValue === '' ||
                 product.name.toLowerCase().includes(searchValue) ||
                 product.id.toLowerCase().includes(searchValue);
 
-            // Category filter
+            // Category filter - Lọc theo danh mục
             const matchesCategory = categoryFilter === 'all' || product.category === categoryFilter;
 
-            // Status filter
+            // Status filter - Lọc theo trạng thái
             const matchesStatus = statusFilter === 'all' || product.status === statusFilter;
 
             return matchesSearch && matchesCategory && matchesStatus;
         });
 
-        // Calculate pagination
+        // Calculate pagination - Tính toán phân trang
         const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
         const startIndex = (currentPage - 1) * productsPerPage;
         const paginatedProducts = filteredProducts.slice(startIndex, startIndex + productsPerPage);
 
-        // Clear the table
+        // Clear the table - Xóa bảng
         productTableBody.innerHTML = '';
 
-        // Add products to the table
+        // Add products to the table - Thêm sản phẩm vào bảng
         paginatedProducts.forEach(product => {
             const row = document.createElement('tr');
 
@@ -267,7 +282,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 <td>${product.discount}%</td>
                 <td><span class="status ${statusClass}">${statusText}</span></td>
                 <td>
-                    <button class="action-btn delete-product" data-id="${product.id}">
+                    <button class="action-btn delete-product" data-id="${product.id}" data-name="${product.name}">
                         <i class="fas fa-trash delete-icon"></i>
                     </button>
                     <button class="action-btn edit-product" data-id="${product.id}">
@@ -279,7 +294,7 @@ document.addEventListener('DOMContentLoaded', function () {
             productTableBody.appendChild(row);
         });
 
-        // Add event listeners to edit and delete buttons
+        // Add event listeners to edit and delete buttons - Thêm sự kiện cho nút sửa và xóa
         document.querySelectorAll('.edit-product').forEach(btn => {
             btn.addEventListener('click', function () {
                 const productId = this.getAttribute('data-id');
@@ -290,18 +305,23 @@ document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('.delete-product').forEach(btn => {
             btn.addEventListener('click', function () {
                 productToDelete = this.getAttribute('data-id');
+                productNameToDelete = this.getAttribute('data-name');
+
+                // Set product name in delete confirmation modal
+                productToDeleteSpan.textContent = productNameToDelete;
+
                 deleteModal.style.display = 'block';
             });
         });
 
-        // Update pagination
+        // Update pagination - Cập nhật phân trang
         updatePagination(totalPages);
     }
 
     function updatePagination(totalPages) {
         pagination.innerHTML = '';
 
-        // Previous button
+        // Previous button - Nút Previous
         const prevBtn = document.createElement('button');
         prevBtn.innerHTML = '&lt;';
         prevBtn.disabled = currentPage === 1;
@@ -313,7 +333,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
         pagination.appendChild(prevBtn);
 
-        // Page numbers
+        // Page numbers - Số trang
         for (let i = 1; i <= totalPages; i++) {
             const pageBtn = document.createElement('button');
             pageBtn.textContent = i;
@@ -326,17 +346,17 @@ document.addEventListener('DOMContentLoaded', function () {
             });
             pagination.appendChild(pageBtn);
 
-            // Show ellipsis if there are many pages
+            // Show ellipsis if there are many pages - Hiển thị dấu ... nếu có nhiều trang
             if (totalPages > 7 && i === 3 && currentPage > 5) {
                 const ellipsis = document.createElement('button');
                 ellipsis.textContent = '...';
                 ellipsis.disabled = true;
                 pagination.appendChild(ellipsis);
-                i = totalPages - 3; // Skip to last few pages
+                i = totalPages - 3; // Skip to last few pages - Nhảy đến vài trang cuối cùng
             }
         }
 
-        // Next button
+        // Next button - Nút Next
         const nextBtn = document.createElement('button');
         nextBtn.innerHTML = '&gt;';
         nextBtn.disabled = currentPage === totalPages;
@@ -362,9 +382,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
         currentProductId = productId;
 
-        // Fill form with product data
+        // Fill form with product data - Điền thông tin sản phẩm vào form
         productCode.value = product.id;
-        productCode.disabled = true; // Disable editing product code
+        productCode.disabled = true; // Disable editing product code - Vô hiệu hóa chỉnh sửa mã sản phẩm
         productName.value = product.name;
         productCategory.value = product.category || 'dienthoai';
         productQuantity.value = product.quantity;
@@ -373,7 +393,7 @@ document.addEventListener('DOMContentLoaded', function () {
         productImage.value = product.image || '';
         productDescription.value = product.description || '';
 
-        // Set status radio button
+        // Set status radio button - Thiết lập trạng thái radio button
         const statusRadios = document.getElementsByName('productStatus');
         for (let radio of statusRadios) {
             if (radio.value === product.status) {
@@ -386,12 +406,12 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function saveProduct() {
-        // Hide error messages
+        // Hide error messages - Ẩn thông báo lỗi
         document.querySelectorAll('.error-message').forEach(el => {
             el.style.display = 'none';
         });
 
-        // Validate form
+        // Validate form - Kiểm tra form
         let isValid = true;
 
         if (!productCode.value.trim()) {
@@ -406,7 +426,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (!isValid) return;
 
-        // Get form values
+        // Get form values - Lấy giá trị từ form
         const id = productCode.value.trim();
         const name = productName.value.trim();
         const category = productCategory.value;
@@ -418,7 +438,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const status = document.querySelector('input[name="productStatus"]:checked').value;
 
         if (currentProductId) {
-            // Update existing product
+            // Update existing product - Cập nhật sản phẩm hiện có
             const index = products.findIndex(p => p.id === currentProductId);
             if (index !== -1) {
                 products[index] = {
@@ -434,13 +454,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 };
             }
         } else {
-            // Check if product ID already exists
+            // Check if product ID already exists - Kiểm tra ID sản phẩm đã tồn tại
             if (products.some(p => p.id === id)) {
                 alert('Mã sản phẩm đã tồn tại!');
                 return;
             }
 
-            // Add new product
+            // Add new product - Thêm sản phẩm mới
             products.push({
                 id,
                 name,
@@ -454,10 +474,10 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
 
-        // Update localStorage
+        // Update localStorage - Cập nhật localStorage
         localStorage.setItem('products', JSON.stringify(products));
 
-        // Close modal and refresh display
+        // Close modal and refresh display - Đóng modal và làm mới hiển thị
         productModal.style.display = 'none';
         displayProducts();
     }
@@ -468,12 +488,35 @@ document.addEventListener('DOMContentLoaded', function () {
         displayProducts();
     }
 
+    // Function to show success notification
+    function showSuccessNotification(message) {
+        successMessage.textContent = message;
+        successNotification.style.display = 'block';
+        successNotification.classList.add('fadeIn');
+
+        // Auto hide after 3 seconds
+        setTimeout(() => {
+            hideSuccessNotification();
+        }, 3000);
+    }
+
+    // Function to hide success notification
+    function hideSuccessNotification() {
+        successNotification.classList.remove('fadeIn');
+        successNotification.classList.add('fadeOut');
+
+        setTimeout(() => {
+            successNotification.style.display = 'none';
+            successNotification.classList.remove('fadeOut');
+        }, 300);
+    }
+
     function resetForm() {
         productForm.reset();
         productCode.disabled = false;
         currentProductId = null;
 
-        // Reset error messages
+        // Reset error messages - Đặt lại thông báo lỗi
         document.querySelectorAll('.error-message').forEach(el => {
             el.style.display = 'none';
         });
@@ -483,7 +526,7 @@ document.addEventListener('DOMContentLoaded', function () {
         return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + ' đ';
     }
 
-    // Functions for price input buttons
+    // Functions for price input buttons - Các hàm cho nút nhập giá
     window.increasePrice = function () {
         const currentPrice = parseInt(productPrice.value.replace(/[^\d]/g, '')) || 0;
         productPrice.value = (currentPrice + 100000).toString();

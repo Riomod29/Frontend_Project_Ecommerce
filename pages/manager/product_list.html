@@ -221,20 +221,36 @@
         </div>
     </div>
 
-    <!-- Delete Confirmation Modal -->
+    <!-- Delete Confirmation Modal - Xác nhận xoá sản phẩm -->
     <div class="modal" id="deleteModal">
         <div class="modal-content delete-content">
             <div class="modal-header">
-                <h2>Xác nhận xóa</h2>
+                <h2>Xác nhận</h2>
                 <span class="close" id="closeDeleteModal">&times;</span>
             </div>
             <div class="modal-body">
-                <p>Bạn có chắc chắn muốn xóa sản phẩm này?</p>
+                <p>Bạn có chắc chắn muốn xóa sản phẩm <span id="productToDelete"></span> khỏi hệ thống không?</p>
             </div>
             <div class="modal-footer">
                 <button id="cancelDeleteBtn" class="btn cancel-btn">Hủy</button>
                 <button id="confirmDeleteBtn" class="btn delete-btn">Xóa</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Success notification - Thông báo xoá thành công-->
+    <div id="successNotification" class="success-notification">
+        <div class="success-content">
+            <div class="success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="success-message">
+                <h3>Thành công</h3>
+                <p id="successMessage">Xóa sản phẩm thành công</p>
+            </div>
+            <button id="closeSuccessBtn" class="close-success-btn">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
     </div>
 

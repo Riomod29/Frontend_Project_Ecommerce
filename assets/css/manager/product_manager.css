@@ -180,6 +180,13 @@ th .sort {
   top: 2px;
   cursor: pointer;
 }
+th .sort.asc {
+  color: #1976d2;
+  transform: rotate(180deg);
+}
+th .sort.desc {
+  color: #1976d2;
+}
 tbody tr {
   border-bottom: 1px solid #f0f0f0;
   transition: background 0.2s;
@@ -278,6 +285,9 @@ tbody tr:hover {
   max-width: 36vw;
   box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
   position: relative;
+  margin: 0 auto; /* Canh giữa theo chiều ngang */
+  top: 50%;
+  transform: translateY(-50%); /* Đảm bảo canh giữa chính xác theo chiều dọc */
 }
 .modal-content h2 {
   margin-top: 0;
@@ -372,4 +382,64 @@ tbody tr:hover {
 #formAddCategory {
   margin-top: 0;
   margin-bottom: 0;
+}
+
+/* Notification styles - CSS cho thông báo */
+.notification {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  padding: 12px 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 2000;
+  transform: translateX(110%);
+  transition: transform 0.3s ease;
+  max-width: 300px;
+}
+
+.notification.show {
+  transform: translateX(0);
+}
+
+.notification.success {
+  border-left: 4px solid #43a047;
+}
+
+.notification.error {
+  border-left: 4px solid #e53935;
+}
+
+.notification-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.notification-content i {
+  font-size: 18px;
+}
+
+.notification.success i {
+  color: #43a047;
+}
+
+.notification.error i {
+  color: #e53935;
+}
+
+.notification-content span {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Sorting styles - CSS cho sắp xếp */
+th .sort.asc {
+  color: #1976d2;
+  transform: rotate(180deg);
+}
+
+th .sort.desc {
+  color: #1976d2;
 }

@@ -1,9 +1,20 @@
 document.addEventListener('DOMContentLoaded', function () {
-    // Kiểm tra người dùng đã đăng nhập chưa
+    // Check if user is logged in - Kiểm tra người dùng đã đăng nhập chưa
     checkUserLogin();
 
-    // Banner Animation
-    // Dữ liệu cho banner quảng cáo chính - mỗi đối tượng chứa thông tin cho một slide
+    // // Handle "Giới thiệu" link click to scroll to New Arrival section - Xử lý click vào liên kết "Giới thiệu" để cuộn đến phần New Arrival
+    // const introLink = document.querySelector('.main-nav a:nth-child(2)');
+    // const newArrivalSection = document.getElementById('new-arrival');
+
+    // if (introLink && newArrivalSection) {
+    //     introLink.addEventListener('click', function (e) {
+    //         e.preventDefault();
+    //         newArrivalSection.scrollIntoView({ behavior: 'smooth' });
+    //     });
+    // }
+
+    // Banner Animation - Hoạt ảnh cho banner
+    // Data for main advertising banner - Dữ liệu cho banner quảng cáo chính
     const bannerData = [
         {
             title: "iPhone 14 <span>Pro</span>",
@@ -25,9 +36,9 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     ];
 
-    // Biến theo dõi slide hiện tại của banner chính
+    // Variable to track current banner slide - Biến theo dõi slide hiện tại của banner chính
     let currentBannerIndex = 0;
-    // Lấy tham chiếu đến các phần tử DOM của banner
+    // Get references to banner DOM elements - Lấy tham chiếu đến các phần tử DOM của banner
     const bannerContent = document.querySelector('.banner-content');
     const bannerImage = document.querySelector('.banner-image img');
     const bannerDots = document.querySelectorAll('.banner-nav-dot');
@@ -35,10 +46,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const nextBtn = document.querySelector('.banner-arrow.next');
     const bannerElement = document.querySelector('.banner');
 
-    // Khởi tạo trạng thái hiển thị các nút điều hướng banner
+    // Initialize banner navigation buttons display state - Khởi tạo trạng thái hiển thị các nút điều hướng banner
     updateBannerDots();
 
-    // Thiết lập sự kiện click cho nút điều hướng trước/sau
+    // Set up click events for previous/next buttons - Thiết lập sự kiện click cho nút điều hướng trước/sau
     prevBtn.addEventListener('click', () => {
         navigateBanner(-1);
     });
@@ -47,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function () {
         navigateBanner(1);
     });
 
-    // Thiết lập sự kiện click cho các nút indicator (chấm tròn) ở dưới banner
+    // Set up click events for indicator dots - Thiết lập sự kiện click cho các nút indicator (chấm tròn)
     bannerDots.forEach((dot, index) => {
         dot.addEventListener('click', () => {
             currentBannerIndex = index;
@@ -56,56 +67,51 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Tự động chuyển slide banner mỗi 5 giây
-    // Sử dụng setInterval để tạo hiệu ứng slideshow tự động
+    // Auto slide banner every 5 seconds - Tự động chuyển slide banner mỗi 5 giây
     let bannerInterval = setInterval(() => {
         navigateBanner(1);
     }, 5000);
 
-    // Dừng tự động chuyển slide khi người dùng di chuột vào banner
-    // Cải thiện UX bằng cách cho phép người dùng xem slide hiện tại mà không bị gián đoạn
+    // Stop auto-sliding when user hovers over banner - Dừng tự động chuyển slide khi người dùng di chuột vào banner
     bannerElement.addEventListener('mouseenter', () => {
         clearInterval(bannerInterval);
     });
 
-    // Tiếp tục tự động chuyển slide khi người dùng di chuột ra khỏi banner
+    // Resume auto-sliding when user moves mouse away - Tiếp tục tự động chuyển slide khi người dùng di chuột ra khỏi banner
     bannerElement.addEventListener('mouseleave', () => {
         bannerInterval = setInterval(() => {
             navigateBanner(1);
         }, 5000);
     });
 
-    // Biến theo dõi hướng animation để có hiệu ứng phù hợp
+    // Track animation direction for appropriate effect - Biến theo dõi hướng animation để có hiệu ứng phù hợp
     let animationDirection = 'right';
 
     /**
-     * Hàm điều hướng giữa các slide của banner
-     * @param {number} direction - Hướng di chuyển: 1 để tiến, -1 để lùi
+     * Navigate between banner slides - Hàm điều hướng giữa các slide của banner
+     * @param {number} direction - Direction to move: 1 for next, -1 for previous - Hướng di chuyển: 1 để tiến, -1 để lùi
      */
     function navigateBanner(direction) {
-        // Cập nhật hướng animation dựa trên hướng điều hướng
+        // Update animation direction based on navigation - Cập nhật hướng animation dựa trên hướng điều hướng
         animationDirection = direction > 0 ? 'right' : 'left';
 
-        // Tính toán index mới với xử lý vòng lặp (nếu đang ở slide cuối mà tiến tiếp sẽ về slide đầu)
-        // Sử dụng phép toán modulo với bannerData.length để đảm bảo index luôn trong phạm vi hợp lệ
+        // Calculate new index with wraparound - Tính toán index mới với xử lý vòng lặp
         currentBannerIndex = (currentBannerIndex + direction + bannerData.length) % bannerData.length;
         updateBanner();
         updateBannerDots();
     }
 
     /**
-     * Hàm cập nhật nội dung và animation của banner
-     * Áp dụng hiệu ứng fade và slide để tạo chuyển động mượt mà
+     * Update banner content and animations - Hàm cập nhật nội dung và animation của banner
      */
     function updateBanner() {
-        // Làm mờ nội dung hiện tại trước khi thay đổi
+        // Fade out current content before changing - Làm mờ nội dung hiện tại trước khi thay đổi
         bannerContent.style.opacity = 0;
         bannerImage.style.opacity = 0;
 
-        // Sử dụng setTimeout để tạo độ trễ trước khi cập nhật nội dung mới
-        // Điều này tạo ra hiệu ứng fade in/out mượt mà
+        // Use timeout to create a delay before updating content - Sử dụng setTimeout để tạo độ trễ trước khi cập nhật nội dung mới
         setTimeout(() => {
-            // Cập nhật nội dung từ dữ liệu banner
+            // Update content from banner data - Cập nhật nội dung từ dữ liệu banner
             const currentBanner = bannerData[currentBannerIndex];
             bannerContent.innerHTML = `
                 <h3>${currentBanner.tagline}</h3>
@@ -115,8 +121,7 @@ document.addEventListener('DOMContentLoaded', function () {
             `;
             bannerImage.src = currentBanner.image;
 
-            // Đặt lại (reset) animation cho các phần tử nội dung
-            // Lấy tất cả các phần tử con trong banner content để áp dụng animation riêng biệt
+            // Reset animations for content elements - Đặt lại (reset) animation cho các phần tử nội dung
             const elements = [
                 bannerContent.querySelector('h3'),
                 bannerContent.querySelector('h1'),
@@ -124,38 +129,35 @@ document.addEventListener('DOMContentLoaded', function () {
                 bannerContent.querySelector('.btn-buy')
             ];
 
-            // Reset animation cho từng phần tử
+            // Reset animation for each element - Reset animation cho từng phần tử
             elements.forEach(el => {
                 if (el) {
                     el.style.animation = 'none';
-                    el.offsetHeight; // Trigger reflow để đảm bảo animation được reset hoàn toàn
+                    el.offsetHeight; // Trigger reflow to ensure animation reset - Trigger reflow để đảm bảo animation được reset
                 }
             });
 
-            // Áp dụng animation mới dựa trên hướng điều hướng
-            // Chọn kiểu animation phù hợp với hướng di chuyển để tạo hiệu ứng nhất quán
+            // Apply new animations based on direction - Áp dụng animation mới dựa trên hướng điều hướng
             const animationIn = animationDirection === 'right' ? 'slideInLeft' : 'slideInRight';
 
-            // Áp dụng animation cho từng phần tử với độ trễ tăng dần
-            // Tạo hiệu ứng các phần tử xuất hiện lần lượt thay vì cùng một lúc
+            // Apply animations with increasing delays - Áp dụng animation cho từng phần tử với độ trễ tăng dần
             if (elements[0]) elements[0].style.animation = `${animationIn} 0.8s ease`;
             if (elements[1]) elements[1].style.animation = `${animationIn} 0.8s ease 0.2s both`;
             if (elements[2]) elements[2].style.animation = `${animationIn} 0.8s ease 0.4s both`;
             if (elements[3]) elements[3].style.animation = `${animationIn} 0.8s ease 0.6s both`;
 
-            // Hiển thị nội dung mới sau khi đã áp dụng animation
+            // Show new content after applying animations - Hiển thị nội dung mới sau khi đã áp dụng animation
             bannerContent.style.opacity = 1;
             bannerImage.style.opacity = 1;
 
-            // Áp dụng animation khác cho hình ảnh dựa trên hướng
+            // Apply different animation for image - Áp dụng animation khác cho hình ảnh
             const imageAnimation = animationDirection === 'right' ? 'zoomInFromRight' : 'zoomInFromLeft';
             bannerImage.style.animation = `${imageAnimation} 1s ease`;
         }, 300);
     }
 
     /**
-     * Hàm cập nhật trạng thái active cho các nút điều hướng dạng chấm
-     * Đánh dấu vị trí slide hiện tại trong giao diện
+     * Update active state for banner navigation dots - Hàm cập nhật trạng thái active cho các nút điều hướng dạng chấm
      */
     function updateBannerDots() {
         bannerDots.forEach((dot, index) => {
@@ -167,8 +169,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Phần Animation cho Banner Ưu Đãi Mùa Hè
-    // Cơ chế tương tự như banner chính nhưng có một số hiệu ứng và thời gian khác biệt
+    // Animation for Summer Sale Banner - Phần Animation cho Banner Ưu Đãi Mùa Hè
     const saleSlides = document.querySelectorAll('.sale-slide');
     const saleNavDots = document.querySelectorAll('.sale-banner-nav-dot');
     const salePrevBtn = document.querySelector('.sale-banner-arrow.prev');
@@ -178,10 +179,10 @@ document.addEventListener('DOMContentLoaded', function () {
     let currentSaleIndex = 0;
     let animationSaleDirection = 'right';
 
-    // Khởi tạo trạng thái hiển thị điểm chỉ mục cho banner khuyến mãi
+    // Initialize sale banner navigation indicators - Khởi tạo trạng thái hiển thị điểm chỉ mục cho banner khuyến mãi
     updateSaleDots();
 
-    // Thiết lập sự kiện điều hướng cho banner khuyến mãi
+    // Set up navigation events for sale banner - Thiết lập sự kiện điều hướng cho banner khuyến mãi
     if (salePrevBtn) {
         salePrevBtn.addEventListener('click', () => {
             navigateSale(-1);
@@ -194,7 +195,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Thiết lập sự kiện khi người dùng click vào các chấm chỉ mục
+    // Set up click events for sale banner indicator dots - Thiết lập sự kiện khi người dùng click vào các chấm chỉ mục
     saleNavDots.forEach((dot, index) => {
         dot.addEventListener('click', () => {
             currentSaleIndex = index;
@@ -203,12 +204,12 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Tự động chuyển slide cho banner khuyến mãi mỗi 6 giây
+    // Auto slide summer sale banner every 6 seconds - Tự động chuyển slide cho banner khuyến mãi mỗi 6 giây
     let saleInterval = setInterval(() => {
         navigateSale(1);
     }, 6000);
 
-    // Dừng tự động chuyển slide khi người dùng tương tác - tương tự như banner chính
+    // Pause auto-sliding on hover - Dừng tự động chuyển slide khi người dùng tương tác
     if (summerSaleElement) {
         summerSaleElement.addEventListener('mouseenter', () => {
             clearInterval(saleInterval);
@@ -222,8 +223,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     /**
-     * Hàm điều hướng giữa các slide của banner khuyến mãi
-     * @param {number} direction - Hướng di chuyển (1: tiến, -1: lùi)
+     * Navigate between sale banner slides - Hàm điều hướng giữa các slide của banner khuyến mãi
+     * @param {number} direction - Direction to move (1: next, -1: previous) - Hướng di chuyển (1: tiến, -1: lùi)
      */
     function navigateSale(direction) {
         animationSaleDirection = direction > 0 ? 'right' : 'left';
@@ -233,16 +234,14 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     /**
-     * Hàm cập nhật nội dung và animation cho banner khuyến mãi
-     * Phức tạp hơn banner chính vì có nhiều phần tử con cần animation riêng biệt
+     * Update content and animations for sale banner - Hàm cập nhật nội dung và animation cho banner khuyến mãi
      */
     function updateSaleBanner() {
-        // Ẩn tất cả các slide trước khi hiển thị slide mới
+        // Hide all slides before showing the new one - Ẩn tất cả các slide trước khi hiển thị slide mới
         saleSlides.forEach(slide => {
             slide.classList.remove('active');
 
-            // Reset animations cho tất cả hình ảnh và nội dung
-            // Đảm bảo animation luôn chạy mới khi chuyển slide
+            // Reset animations for all images and content - Reset animations cho tất cả hình ảnh và nội dung
             const images = slide.querySelectorAll('img');
             const content = slide.querySelector('.sale-content');
 
@@ -253,63 +252,63 @@ document.addEventListener('DOMContentLoaded', function () {
                     content.querySelector('.btn-sale')
                 ];
 
-                // Reset animation cho từng phần tử nội dung
+                // Reset animation for each content element - Reset animation cho từng phần tử nội dung
                 contentElements.forEach(el => {
                     if (el) {
                         el.style.animation = 'none';
-                        el.offsetHeight; // Trigger reflow
+                        el.offsetHeight; // Trigger reflow - Trigger reflow
                     }
                 });
             }
 
-            // Reset animation cho tất cả hình ảnh
+            // Reset animation for all images - Reset animation cho tất cả hình ảnh
             images.forEach(img => {
                 img.style.animation = 'none';
-                img.offsetHeight; // Trigger reflow
+                img.offsetHeight; // Trigger reflow - Trigger reflow
             });
         });
 
-        // Thêm độ trễ nhỏ trước khi hiển thị slide mới để tạo hiệu ứng mượt mà hơn
+        // Add small delay before showing new slide - Thêm độ trễ nhỏ trước khi hiển thị slide mới
         setTimeout(() => {
             const currentSlide = saleSlides[currentSaleIndex];
             currentSlide.classList.add('active');
 
-            // Áp dụng animation cho slide hiện tại với nhiều hiệu ứng phức tạp
+            // Apply animations to current slide - Áp dụng animation cho slide hiện tại
             const images = currentSlide.querySelectorAll('img');
-            // Phân biệt giữa các hình ảnh bên trái và bên phải để áp dụng animation khác nhau
+            // Distinguish between left and right images - Phân biệt giữa các hình ảnh bên trái và bên phải
             const leftImages = currentSlide.querySelectorAll('.summer-sale-img-left img');
             const rightImages = currentSlide.querySelectorAll('.summer-sale-img-right img');
 
-            // Animation cho hình ảnh bên trái - xử lý khác nhau tùy thuộc vào hướng di chuyển
+            // Animations for left images - Animation cho hình ảnh bên trái
             leftImages.forEach((img, i) => {
                 if (animationSaleDirection === 'right') {
-                    // Hiệu ứng di chuyển từ trái vào khi di chuyển sang phải
+                    // Left-to-right movement gets left-entry animation - Hiệu ứng di chuyển từ trái vào khi di chuyển sang phải
                     img.style.animation = `saleItemFadeInLeft 0.8s ease-out forwards ${0.2 + i * 0.2}s`;
                 } else {
-                    // Hiệu ứng di chuyển từ trên xuống khi di chuyển sang trái  
+                    // Right-to-left movement gets top-entry animation - Hiệu ứng di chuyển từ trên xuống khi di chuyển sang trái  
                     img.style.animation = `saleItemFadeInDown 0.8s ease-out forwards ${0.2 + i * 0.2}s`;
                 }
             });
 
-            // Animation cho hình ảnh bên phải
+            // Animations for right images - Animation cho hình ảnh bên phải
             rightImages.forEach((img, i) => {
                 if (animationSaleDirection === 'right') {
-                    // Hiệu ứng di chuyển từ dưới lên khi di chuyển sang phải
+                    // Left-to-right movement gets bottom-entry animation - Hiệu ứng di chuyển từ dưới lên khi di chuyển sang phải
                     img.style.animation = `saleItemFadeInUp 0.8s ease-out forwards ${0.3 + i * 0.2}s`;
                 } else {
-                    // Hiệu ứng di chuyển từ phải vào khi di chuyển sang trái
+                    // Right-to-left movement gets right-entry animation - Hiệu ứng di chuyển từ phải vào khi di chuyển sang trái
                     img.style.animation = `saleItemFadeInRight 0.8s ease-out forwards ${0.3 + i * 0.2}s`;
                 }
             });
 
-            // Animation cho phần nội dung - hiển thị lần lượt từng phần tử
+            // Animations for content with sequential display - Animation cho phần nội dung - hiển thị lần lượt từng phần tử
             const content = currentSlide.querySelector('.sale-content');
             if (content) {
                 const h2 = content.querySelector('h2');
                 const p = content.querySelector('p');
                 const button = content.querySelector('.btn-sale');
 
-                // Áp dụng animation với độ trễ khác nhau để tạo hiệu ứng tuần tự
+                // Apply animations with different delays - Áp dụng animation với độ trễ khác nhau để tạo hiệu ứng tuần tự
                 if (h2) h2.style.animation = 'saleContentFadeIn 0.8s ease-out forwards 0.2s';
                 if (p) p.style.animation = 'saleContentFadeIn 0.8s ease-out forwards 0.4s';
                 if (button) button.style.animation = 'saleButtonFadeIn 0.8s ease-out forwards 0.6s';
@@ -318,7 +317,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     /**
-     * Hàm cập nhật trạng thái active cho các nút điều hướng banner khuyến mãi
+     * Update active state for sale banner navigation dots - Hàm cập nhật trạng thái active cho các nút điều hướng banner khuyến mãi
      */
     function updateSaleDots() {
         saleNavDots.forEach((dot, index) => {
@@ -330,45 +329,45 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Thêm chức năng để cuộn đến footer khi nhấp vào liên kết "Liên hệ"
+    // Add functionality to scroll to footer when "Contact" link is clicked - Thêm chức năng để cuộn đến footer khi nhấp vào liên kết "Liên hệ"
     const contactLink = document.querySelector('.main-nav a:nth-child(3)');
     const footer = document.querySelector('.footer');
 
     contactLink.addEventListener('click', function (e) {
-        e.preventDefault(); // Ngăn chặn hành vi mặc định của liên kết
-        footer.scrollIntoView({ behavior: 'smooth' }); // Cuộn mượt xuống footer
+        e.preventDefault(); // Prevent default link behavior - Ngăn chặn hành vi mặc định của liên kết
+        footer.scrollIntoView({ behavior: 'smooth' }); // Smooth scroll to footer - Cuộn mượt xuống footer
     });
 });
 
 /**
- * Kiểm tra trạng thái đăng nhập và hiển thị thông tin người dùng
- * Hàm này xử lý việc hiển thị tên người dùng sau khi đăng nhập và tạo menu dropdown
+ * Check login status and display user information - Kiểm tra trạng thái đăng nhập và hiển thị thông tin người dùng
+ * This function handles displaying user name after login and creating dropdown menu - Hàm này xử lý việc hiển thị tên người dùng sau khi đăng nhập và tạo menu dropdown
  */
 function checkUserLogin() {
     const userIcon = document.getElementById('user-icon');
     const userName = document.getElementById('user-name');
 
-    if (!userIcon || !userName) return; // Đảm bảo các phần tử tồn tại trong DOM
+    if (!userIcon || !userName) return; // Ensure elements exist in the DOM - Đảm bảo các phần tử tồn tại trong DOM
 
-    // Kiểm tra thông tin đăng nhập trong sessionStorage (người dùng hiện tại đang đăng nhập)
+    // Check login info in sessionStorage (currently logged in user) - Kiểm tra thông tin đăng nhập trong sessionStorage (người dùng hiện tại đang đăng nhập)
     const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
 
     if (currentUser && currentUser.isLoggedIn) {
-        // Hiển thị tên người dùng đã đăng nhập trên giao diện
+        // Display the logged in user's name - Hiển thị tên người dùng đã đăng nhập trên giao diện
         userName.textContent = currentUser.firstname;
 
-        // Thay đổi link để chuyển sang trang cá nhân thay vì trang đăng nhập
-        userIcon.href = "#"; // Có thể thay đổi thành đường dẫn đến trang cá nhân
+        // Change link to personal page instead of login - Thay đổi link để chuyển sang trang cá nhân thay vì trang đăng nhập
+        userIcon.href = "#"; // Could be changed to profile page link - Có thể thay đổi thành đường dẫn đến trang cá nhân
 
-        // Thêm dropdown menu cho người dùng đã đăng nhập khi click vào biểu tượng
+        // Add dropdown menu for logged in users when icon is clicked - Thêm dropdown menu cho người dùng đã đăng nhập khi click vào biểu tượng
         userIcon.addEventListener('click', function (e) {
             e.preventDefault();
 
-            // Kiểm tra và tạo menu dropdown nếu chưa tồn tại
+            // Check and create dropdown menu if it doesn't exist - Kiểm tra và tạo menu dropdown nếu chưa tồn tại
             let dropdownMenu = document.getElementById('user-dropdown');
 
             if (!dropdownMenu) {
-                // Tạo mới dropdown menu với các lựa chọn cho người dùng đã đăng nhập
+                // Create new dropdown menu with options for logged in user - Tạo mới dropdown menu với các lựa chọn cho người dùng đã đăng nhập
                 dropdownMenu = document.createElement('div');
                 dropdownMenu.id = 'user-dropdown';
                 dropdownMenu.className = 'user-dropdown';
@@ -381,8 +380,8 @@ function checkUserLogin() {
                     </ul>
                 `;
                 //../../pages/manager/product_manager.html = Admin
-                // Thêm CSS động cho dropdown menu
-                // Phương pháp này cho phép thêm style mà không cần sửa file CSS chính
+                // Add dynamic CSS for dropdown menu - Thêm CSS động cho dropdown menu
+                // This method allows adding style without editing the main CSS file - Phương pháp này cho phép thêm style mà không cần sửa file CSS chính
                 const style = document.createElement('style');
                 style.textContent = `
                     .header-icons {
@@ -430,62 +429,62 @@ function checkUserLogin() {
                 `;
                 document.head.appendChild(style);
 
-                // Thêm dropdown menu vào DOM
+                // Add dropdown menu to DOM - Thêm dropdown menu vào DOM
                 userIcon.parentNode.appendChild(dropdownMenu);
 
-                // Xử lý sự kiện đăng xuất khi người dùng click vào nút đăng xuất
+                // Handle logout event when user clicks logout button - Xử lý sự kiện đăng xuất khi người dùng click vào nút đăng xuất
                 document.getElementById('logout-btn').addEventListener('click', function (e) {
                     e.preventDefault();
 
-                    // Hiển thị thông báo xác nhận đăng xuất
+                    // Show logout confirmation modal - Hiển thị thông báo xác nhận đăng xuất
                     showLogoutConfirmation();
                 });
 
-                // Thêm sự kiện đóng dropdown khi click ra ngoài
-                // Cải thiện UX bằng cách tự động đóng menu khi không cần thiết
+                // Add event to close dropdown when clicking outside - Thêm sự kiện đóng dropdown khi click ra ngoài
+                // Improve UX by automatically closing menu when not needed - Cải thiện UX bằng cách tự động đóng menu khi không cần thiết
                 document.addEventListener('click', function (event) {
                     if (!userIcon.contains(event.target) && !dropdownMenu.contains(event.target)) {
                         dropdownMenu.remove();
                     }
                 });
             } else {
-                // Nếu menu đã tồn tại, xóa nó đi (đóng menu)
+                // If menu already exists, remove it (close menu) - Nếu menu đã tồn tại, xóa nó đi (đóng menu)
                 dropdownMenu.remove();
             }
         });
     } else {
-        // Kiểm tra nếu có user được lưu trong localStorage (remember me)
+        // Check if there is a remembered user in localStorage - Kiểm tra nếu có user được lưu trong localStorage (remember me)
         const rememberedUser = JSON.parse(localStorage.getItem('rememberedUser'));
 
         if (rememberedUser) {
-            // Tự động đăng nhập từ remember me - khôi phục phiên đăng nhập
+            // Auto login from remember me - Tự động đăng nhập từ remember me - khôi phục phiên đăng nhập
             sessionStorage.setItem('currentUser', JSON.stringify(rememberedUser));
             userName.textContent = rememberedUser.firstname;
             userIcon.href = "#";
 
-            // Tải lại trang để áp dụng trạng thái đăng nhập
+            // Reload page to apply login state - Tải lại trang để áp dụng trạng thái đăng nhập
             window.location.reload();
         }
     }
 }
 
-// Hiển thị modal xác nhận đăng xuất
+// Display logout confirmation modal - Hiển thị modal xác nhận đăng xuất
 function showLogoutConfirmation() {
     const modal = document.getElementById('logout-modal');
     if (!modal) return;
     modal.style.display = 'flex';
-    // Xử lý nút Hủy
+    // Handle Cancel button - Xử lý nút Hủy
     document.getElementById('cancel-logout').onclick = function () {
         modal.style.display = 'none';
     };
-    // Xử lý nút Đăng xuất
+    // Handle Logout button - Xử lý nút Đăng xuất
     document.getElementById('confirm-logout').onclick = function () {
-        // Xóa thông tin đăng nhập
+        // Clear login information - Xóa thông tin đăng nhập
         sessionStorage.removeItem('currentUser');
         localStorage.removeItem('rememberedUser');
         window.location.href = '../../pages/auth/lognin.html';
     };
-    // Đóng modal khi click ra ngoài
+    // Close modal when clicking outside - Đóng modal khi click ra ngoài
     modal.onclick = function (e) {
         if (e.target === modal) modal.style.display = 'none';
     };

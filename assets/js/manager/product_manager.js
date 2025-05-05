@@ -1,4 +1,4 @@
-// Hiển thị/ẩn modal thêm mới danh mục
+// Show/Hide add category modal - Hiển thị/ẩn modal thêm mới danh mục
 const btnOpen = document.getElementById('btnOpenAddCategory');
 const btnClose = document.getElementById('btnCloseAddCategory');
 const modal = document.getElementById('modalAddCategory');
@@ -12,7 +12,7 @@ if (btnOpen && btnClose && modal) {
     }
 }
 
-// Logic thêm mới danh mục
+// Logic for adding new category - Logic thêm mới danh mục
 const form = document.getElementById('formAddCategory');
 const btnCancel = document.getElementById('btnCancelAddCategory');
 if (btnCancel && modal) {
@@ -28,7 +28,7 @@ if (form) {
         clearFormError();
         const code = form.categoryCode.value.trim();
         const name = form.categoryName.value.trim();
-        // Lấy trạng thái từ radio
+        // Get status from radio button - Lấy trạng thái từ radio
         const status = form.querySelector('input[name="categoryStatus"]:checked')?.value || 'active';
         let valid = true;
         if (!code) {
@@ -45,14 +45,26 @@ if (form) {
             setError('categoryCode', 'Mã danh mục đã tồn tại');
             return;
         }
+
+        // Kiểm tra tên danh mục trùng
+        if (categories.some(c => c.name.toLowerCase() === name.toLowerCase())) {
+            setError('categoryName', 'Tên danh mục đã tồn tại');
+            return;
+        }
+
         const newCategory = { code, name, status };
         categories.push(newCategory);
         localStorage.setItem('categories', JSON.stringify(categories));
+
+        // Hiển thị thông báo thêm mới thành công
+        showNotification('Thêm mới danh mục thành công!');
+
         modal.style.display = 'none';
         form.reset();
         renderCategoryTable();
     };
 }
+// Set error message for input field - Hiển thị thông báo lỗi cho trường nhập liệu
 function setError(field, message) {
     const input = document.getElementById(field);
     if (input) input.classList.add('error');
@@ -61,12 +73,43 @@ function setError(field, message) {
         let err = document.createElement('div');
         err.className = 'error-message';
         err.innerText = message;
-        // Xóa error-message cũ nếu có
+        // Remove existing error message if any - Xóa error-message cũ nếu có
         let oldErr = group.querySelector('.error-message');
         if (oldErr) oldErr.remove();
         group.appendChild(err);
     }
 }
+
+// Show notification - Hiển thị thông báo
+function showNotification(message, type = 'success') {
+    // Create notification element - Tạo phần tử thông báo
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.innerHTML = `
+        <div class="notification-content">
+            <i class="${type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle'}"></i>
+            <span>${message}</span>
+        </div>
+    `;
+
+    // Add to document - Thêm vào tài liệu
+    document.body.appendChild(notification);
+
+    // Show notification - Hiển thị thông báo
+    setTimeout(() => {
+        notification.classList.add('show');
+    }, 10);
+
+    // Auto hide after 3 seconds - Tự động ẩn sau 3 giây
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => {
+            document.body.removeChild(notification);
+        }, 300);
+    }, 3000);
+}
+
+// Clear all form errors - Xóa tất cả lỗi của form
 function clearFormError() {
     ['categoryCode', 'categoryName'].forEach(id => {
         const input = document.getElementById(id);
@@ -79,12 +122,16 @@ function clearFormError() {
     });
 }
 
-// Biến để lưu trạng thái phân trang
+// Variables for pagination state - Biến để lưu trạng thái phân trang
 let currentPage = 1;
 const itemsPerPage = 5;
 let filteredCategories = [];
 
-// Xử lý lọc danh mục
+// Variables for sorting - Biến cho tính năng sắp xếp
+let sortField = 'code'; // Field to sort by (code or name)
+let sortDirection = 'asc'; // Sort direction (asc or desc)
+
+// Handle category filtering - Xử lý lọc danh mục
 function filterCategories() {
     let categories = JSON.parse(localStorage.getItem('categories') || '[]');
     const searchInput = document.querySelector('.toolbar input[type="text"]');
@@ -95,12 +142,12 @@ function filterCategories() {
         const statusFilter = statusSelect.value;
 
         filteredCategories = categories.filter(category => {
-            // Lọc theo từ khóa tìm kiếm
+            // Filter by search keyword - Lọc theo từ khóa tìm kiếm
             const matchesSearch = !searchTerm ||
                 category.name.toLowerCase().includes(searchTerm) ||
                 category.code.toLowerCase().includes(searchTerm);
 
-            // Lọc theo trạng thái
+            // Filter by status - Lọc theo trạng thái
             let matchesStatus = true;
             if (statusFilter === 'Đang hoạt động') {
                 matchesStatus = category.status === 'active';
@@ -111,11 +158,33 @@ function filterCategories() {
             return matchesSearch && matchesStatus;
         });
 
+        // Sort categories - Sắp xếp danh mục
+        sortCategories();
         renderPaginatedCategories();
     }
 }
 
-// Hiển thị danh mục theo trang
+// Sort categories function - Hàm sắp xếp danh mục
+function sortCategories() {
+    filteredCategories.sort((a, b) => {
+        let valueA = a[sortField];
+        let valueB = b[sortField];
+
+        // Handle string comparison - Xử lý so sánh chuỗi
+        if (typeof valueA === 'string') {
+            valueA = valueA.toLowerCase();
+            valueB = valueB.toLowerCase();
+        }
+
+        if (sortDirection === 'asc') {
+            return valueA > valueB ? 1 : -1;
+        } else {
+            return valueA < valueB ? 1 : -1;
+        }
+    });
+}
+
+// Display categories by page - Hiển thị danh mục theo trang
 function renderPaginatedCategories() {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
@@ -149,7 +218,7 @@ function renderPaginatedCategories() {
     bindDeleteButtons();
 }
 
-// Cập nhật hiển thị phân trang
+// Update pagination display - Cập nhật hiển thị phân trang
 function updatePagination() {
     const pagination = document.querySelector('.pagination');
     if (!pagination) return;
@@ -157,7 +226,7 @@ function updatePagination() {
     const totalPages = Math.ceil(filteredCategories.length / itemsPerPage);
     pagination.innerHTML = '';
 
-    // Nút Previous
+    // Previous button - Nút Previous
     const prevButton = document.createElement('button');
     prevButton.innerHTML = '&lt;';
     prevButton.disabled = currentPage === 1;
@@ -169,7 +238,7 @@ function updatePagination() {
     });
     pagination.appendChild(prevButton);
 
-    // Hiển thị các trang
+    // Display pages - Hiển thị các trang
     const maxVisiblePages = 7;
     let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
     let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
@@ -178,11 +247,11 @@ function updatePagination() {
         startPage = Math.max(1, endPage - maxVisiblePages + 1);
     }
 
-    // Thêm trang 1
+    // Add page 1 - Thêm trang 1
     if (startPage > 1) {
         addPageButton(1);
 
-        // Thêm dấu ... nếu cần
+        // Add ellipsis if needed - Thêm dấu ... nếu cần
         if (startPage > 2) {
             const ellipsis = document.createElement('button');
             ellipsis.textContent = '...';
@@ -191,14 +260,14 @@ function updatePagination() {
         }
     }
 
-    // Thêm các trang giữa
+    // Add middle pages - Thêm các trang giữa
     for (let i = startPage; i <= endPage; i++) {
         addPageButton(i);
     }
 
-    // Thêm trang cuối
+    // Add last page - Thêm trang cuối
     if (endPage < totalPages) {
-        // Thêm dấu ... nếu cần
+        // Add ellipsis if needed - Thêm dấu ... nếu cần
         if (endPage < totalPages - 1) {
             const ellipsis = document.createElement('button');
             ellipsis.textContent = '...';
@@ -209,7 +278,7 @@ function updatePagination() {
         addPageButton(totalPages);
     }
 
-    // Nút Next
+    // Next button - Nút Next
     const nextButton = document.createElement('button');
     nextButton.innerHTML = '&gt;';
     nextButton.disabled = currentPage === totalPages || totalPages === 0;
@@ -221,7 +290,7 @@ function updatePagination() {
     });
     pagination.appendChild(nextButton);
 
-    // Hàm tạo nút cho từng trang
+    // Function to create button for each page - Hàm tạo nút cho từng trang
     function addPageButton(pageNumber) {
         const button = document.createElement('button');
         button.textContent = pageNumber;
@@ -236,11 +305,25 @@ function updatePagination() {
     }
 }
 
-// Thêm sự kiện xóa danh mục
+// Add event for deleting category - Thêm sự kiện xóa danh mục
 function bindDeleteButtons() {
     document.querySelectorAll('.icon-btn.delete').forEach(btn => {
         btn.onclick = function () {
             const categoryCode = this.getAttribute('data-id');
+
+            // Check if category has products - Kiểm tra xem danh mục có sản phẩm không
+            const products = JSON.parse(localStorage.getItem('products') || '[]');
+
+            // Find products in this category - Tìm các sản phẩm thuộc danh mục này
+            const productsInCategory = products.filter(p => p.category === categoryCode);
+
+            // If at least 1 product exists, don't allow deletion - Nếu có ít nhất 1 sản phẩm thuộc danh mục, không cho phép xóa
+            if (productsInCategory.length > 0) {
+                alert(`Không thể xóa danh mục này vì đã có ${productsInCategory.length} sản phẩm thuộc danh mục!`);
+                return;
+            }
+
+            // If no products, proceed with deletion - Nếu không có sản phẩm nào, tiếp tục xóa danh mục
             if (confirm('Bạn có chắc chắn muốn xóa danh mục này không?')) {
                 let categories = JSON.parse(localStorage.getItem('categories') || '[]');
                 categories = categories.filter(c => c.code !== categoryCode);
@@ -251,9 +334,9 @@ function bindDeleteButtons() {
     });
 }
 
-// Hiển thị danh mục lên bảng
+// Display categories in table - Hiển thị danh mục lên bảng
 function renderCategoryTable() {
-    // Khởi tạo dữ liệu mẫu nếu chưa có
+    // Initialize sample data if not exists - Khởi tạo dữ liệu mẫu nếu chưa có
     if (!localStorage.getItem('categories')) {
         const sampleCategories = [
             { code: 'DM001', name: 'Điện thoại', status: 'active' },
@@ -275,19 +358,45 @@ function renderCategoryTable() {
     filterCategories();
 }
 
-// Bắt sự kiện khi thay đổi lọc trạng thái
+// Handle status filter change - Bắt sự kiện khi thay đổi lọc trạng thái
 const statusSelect = document.querySelector('.toolbar select');
 if (statusSelect) {
     statusSelect.addEventListener('change', filterCategories);
 }
 
-// Bắt sự kiện tìm kiếm
+// Handle search input - Bắt sự kiện tìm kiếm
 const searchInput = document.querySelector('.toolbar input[type="text"]');
 if (searchInput) {
     searchInput.addEventListener('input', filterCategories);
 }
 
-// Hiển thị lại sự kiện cho icon-btn.edit sau khi render lại bảng
+// Attach sort handlers - Gắn xử lý sự kiện sắp xếp
+document.addEventListener('DOMContentLoaded', function () {
+    const sortHeaders = document.querySelectorAll('th .sort');
+
+    sortHeaders.forEach((header, index) => {
+        header.addEventListener('click', function () {
+            // Set sort field based on column index - Thiết lập trường sắp xếp dựa trên chỉ số cột
+            if (index === 0) {
+                sortField = 'code';
+            } else if (index === 1) {
+                sortField = 'name';
+            }
+
+            // Toggle sort direction - Chuyển đổi hướng sắp xếp
+            sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+
+            // Update sort icon - Cập nhật biểu tượng sắp xếp
+            sortHeaders.forEach(h => h.classList.remove('asc', 'desc'));
+            this.classList.add(sortDirection);
+
+            // Refresh display - Làm mới hiển thị
+            filterCategories();
+        });
+    });
+});
+
+// Rebind edit buttons after table render - Hiển thị lại sự kiện cho icon-btn.edit sau khi render lại bảng
 function bindEditButtons() {
     document.querySelectorAll('.icon-btn.edit').forEach(function (btn) {
         btn.onclick = function () {
@@ -308,17 +417,17 @@ function bindEditButtons() {
 
                 modalUpdate.style.display = 'block';
 
-                // Xử lý đóng modal
+                // Handle closing modal - Xử lý đóng modal
                 document.getElementById('btnCloseUpdateCategory').onclick = () => {
                     modalUpdate.style.display = 'none';
                 };
 
-                // Xử lý hủy cập nhật
+                // Handle cancel update - Xử lý hủy cập nhật
                 document.getElementById('btnCancelUpdateCategory').onclick = () => {
                     modalUpdate.style.display = 'none';
                 };
 
-                // Xử lý form cập nhật
+                // Handle update form submission - Xử lý form cập nhật
                 const updateForm = document.getElementById('formUpdateCategory');
                 updateForm.onsubmit = function (e) {
                     e.preventDefault();
@@ -331,12 +440,23 @@ function bindEditButtons() {
                         return;
                     }
 
-                    // Cập nhật danh mục
+                    // Kiểm tra tên danh mục trùng với các danh mục khác
+                    const isDuplicateName = categories.some(c => c.code !== categoryCode && c.name.toLowerCase() === updatedName.toLowerCase());
+                    if (isDuplicateName) {
+                        alert('Tên danh mục đã tồn tại');
+                        return;
+                    }
+
+                    // Update category - Cập nhật danh mục
                     const categoryIndex = categories.findIndex(c => c.code === categoryCode);
                     if (categoryIndex !== -1) {
                         categories[categoryIndex].name = updatedName;
                         categories[categoryIndex].status = updatedStatus;
                         localStorage.setItem('categories', JSON.stringify(categories));
+
+                        // Hiển thị thông báo cập nhật thành công
+                        showNotification('Cập nhật danh mục thành công!');
+
                         modalUpdate.style.display = 'none';
                         filterCategories();
                     }
@@ -346,14 +466,14 @@ function bindEditButtons() {
     });
 }
 
-// Khởi tạo bảng khi load trang
+// Initialize table on page load - Khởi tạo bảng khi load trang
 window.addEventListener('DOMContentLoaded', renderCategoryTable);
 
-// Phần còn lại của mã JS (cho sản phẩm)
+// Rest of JS code (for products) - Phần còn lại của mã JS (cho sản phẩm)
 document.addEventListener('DOMContentLoaded', function () {
-    // Initialize products if not exists
+    // Initialize products if not exists - Khởi tạo sản phẩm nếu chưa có
     if (!localStorage.getItem('products')) {
-        // Initial sample data
+        // Initial sample data - Dữ liệu mẫu ban đầu
         const initialProducts = [
             {
                 id: 'SP001',
@@ -431,7 +551,7 @@ document.addEventListener('DOMContentLoaded', function () {
         localStorage.setItem('products', JSON.stringify(initialProducts));
     }
 
-    // DOM elements
+    // DOM elements - Các phần tử DOM
     const productTableBody = document.getElementById('productTableBody');
     const paginationContainer = document.getElementById('pagination');
     const searchInput = document.getElementById('searchInput');
@@ -446,7 +566,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const confirmLogoutBtn = document.getElementById('confirmLogoutBtn');
     const logoutBtn = document.getElementById('logout-btn');
 
-    // Variables
+    // Variables - Các biến
     let currentPage = 1;
     const itemsPerPage = 5;
     let currentProducts = [];
@@ -454,10 +574,10 @@ document.addEventListener('DOMContentLoaded', function () {
     let productToDelete = null;
     let statusFilter = 'all';
 
-    // Initialize the page
+    // Initialize the page - Khởi tạo trang
     loadProducts();
 
-    // Event listeners
+    // Event listeners - Các sự kiện lắng nghe
     searchBtn.addEventListener('click', function () {
         filterProducts();
     });
@@ -499,11 +619,11 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     confirmLogoutBtn.addEventListener('click', function () {
-        // Simulate logout
+        // Simulate logout - Mô phỏng đăng xuất
         window.location.href = '../../index.html';
     });
 
-    // Functions
+    // Functions - Các hàm
     function loadProducts() {
         const allProducts = JSON.parse(localStorage.getItem('products')) || [];
         currentProducts = allProducts;
@@ -529,15 +649,15 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function displayProducts(products) {
-        // Calculate pagination
+        // Calculate pagination - Tính toán phân trang
         const totalPages = Math.ceil(products.length / itemsPerPage);
         const startIndex = (currentPage - 1) * itemsPerPage;
         const paginatedProducts = products.slice(startIndex, startIndex + itemsPerPage);
 
-        // Clear current table
+        // Clear current table - Xóa bảng hiện tại
         productTableBody.innerHTML = '';
 
-        // Display products
+        // Display products - Hiển thị sản phẩm
         if (paginatedProducts.length === 0) {
             productTableBody.innerHTML = '<tr><td colspan="7" class="text-center">Không có sản phẩm nào</td></tr>';
         } else {
@@ -562,7 +682,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 productTableBody.appendChild(row);
             });
 
-            // Add event listeners for edit and delete buttons
+            // Add event listeners for edit and delete buttons - Thêm sự kiện cho nút chỉnh sửa và xóa
             document.querySelectorAll('.btn-edit').forEach(btn => {
                 btn.addEventListener('click', function () {
                     const productId = this.getAttribute('data-id');
@@ -578,14 +698,14 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
 
-        // Update pagination
+        // Update pagination - Cập nhật phân trang
         updatePagination(totalPages);
     }
 
     function updatePagination(totalPages) {
         paginationContainer.innerHTML = '';
 
-        // Previous button
+        // Previous button - Nút Previous
         const prevLi = document.createElement('li');
         prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
         const prevLink = document.createElement('a');
@@ -602,7 +722,7 @@ document.addEventListener('DOMContentLoaded', function () {
         prevLi.appendChild(prevLink);
         paginationContainer.appendChild(prevLi);
 
-        // Page buttons
+        // Page buttons - Nút trang
         let startPage = Math.max(1, currentPage - 2);
         let endPage = Math.min(totalPages, startPage + 4);
 
@@ -626,7 +746,7 @@ document.addEventListener('DOMContentLoaded', function () {
             paginationContainer.appendChild(pageLi);
         }
 
-        // If there are more pages, show ellipsis
+        // If there are more pages, show ellipsis - Nếu có nhiều trang hơn, hiển thị dấu ...
         if (endPage < totalPages) {
             const ellipsisLi = document.createElement('li');
             ellipsisLi.className = 'page-item disabled';
@@ -637,7 +757,7 @@ document.addEventListener('DOMContentLoaded', function () {
             ellipsisLi.appendChild(ellipsisLink);
             paginationContainer.appendChild(ellipsisLi);
 
-            // Last page
+            // Last page - Trang cuối
             const lastLi = document.createElement('li');
             lastLi.className = 'page-item';
             const lastLink = document.createElement('a');
@@ -653,7 +773,7 @@ document.addEventListener('DOMContentLoaded', function () {
             paginationContainer.appendChild(lastLi);
         }
 
-        // Next button
+        // Next button - Nút Next
         const nextLi = document.createElement('li');
         nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
         const nextLink = document.createElement('a');
@@ -695,7 +815,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function saveProduct() {
-        // Get form values
+        // Get form values - Lấy giá trị từ form
         const productCode = document.getElementById('productCode').value;
         const productName = document.getElementById('productName').value;
         const productPrice = parseInt(document.getElementById('productPrice').value);
@@ -704,16 +824,16 @@ document.addEventListener('DOMContentLoaded', function () {
         const productStatus = document.getElementById('productStatus').value;
         const productDescription = document.getElementById('productDescription').value;
 
-        // Validate form
+        // Validate form - Kiểm tra form
         if (!productCode || !productName || isNaN(productPrice) || isNaN(productQuantity)) {
             alert('Vui lòng nhập đầy đủ thông tin sản phẩm');
             return;
         }
 
-        // Get all products
+        // Get all products - Lấy tất cả sản phẩm
         const allProducts = JSON.parse(localStorage.getItem('products')) || [];
 
-        // If editing
+        // If editing - Nếu đang chỉnh sửa
         if (editingProductId) {
             const index = allProducts.findIndex(p => p.id === editingProductId);
             if (index !== -1) {
@@ -728,13 +848,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 };
             }
         } else {
-            // If adding new, check if ID already exists
+            // If adding new, check if ID already exists - Nếu thêm mới, kiểm tra mã sản phẩm đã tồn tại
             if (allProducts.some(p => p.id === productCode)) {
                 alert('Mã sản phẩm đã tồn tại');
                 return;
             }
 
-            // Add new product
+            // Add new product - Thêm sản phẩm mới
             allProducts.push({
                 id: productCode,
                 name: productName,
@@ -746,10 +866,10 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
 
-        // Save to localStorage
+        // Save to localStorage - Lưu vào localStorage
         localStorage.setItem('products', JSON.stringify(allProducts));
 
-        // Hide modal and reload products
+        // Hide modal and reload products - Ẩn modal và tải lại sản phẩm
         productModal.hide();
         loadProducts();
     }
@@ -761,6 +881,7 @@ document.addEventListener('DOMContentLoaded', function () {
         loadProducts();
     }
 
+    // Format currency function - Hàm định dạng tiền tệ
     function formatCurrency(amount) {
         return new Intl.NumberFormat('vi-VN').format(amount) + ' đ';
     }

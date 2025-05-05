@@ -397,6 +397,51 @@ header {
 
 .delete-content {
   width: 400px;
+  max-width: 90%;
+}
+
+.delete-content .modal-header {
+  background-color: #fff;
+  color: #333;
+  padding: 16px 20px;
+  border-bottom: 1px solid #f0f0f0;
+  border-radius: 10px
+}
+
+.delete-content .modal-header h2 {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.delete-content .modal-body {
+  padding: 30px;
+  text-align: center;
+}
+
+.delete-content .modal-body p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.delete-content .modal-footer {
+  justify-content: center;
+  gap: 10px;
+  padding: 16px 20px 20px;
+}
+
+.delete-content .cancel-btn {
+  background-color: #f5f5f5;
+  border: none;
+  color: #333;
+  padding: 8px 20px;
+  min-width: 80px;
+}
+
+.delete-content .delete-btn {
+  background-color: #ff4d4f;
+  color: white;
+  padding: 8px 20px;
+  min-width: 80px;
 }
 
 .modal-header {
@@ -605,4 +650,85 @@ select {
 
 input.error {
   border-color: #ff4d4f;
+}
+
+/* Success Notification */
+.success-notification {
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+  min-width: 300px;
+}
+
+.success-content {
+  background-color: #2c3847;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  padding: 14px 20px;
+}
+
+.success-icon {
+  color: #6dcc8e;
+  font-size: 24px;
+  margin-right: 15px;
+}
+
+.success-message {
+  flex: 1;
+}
+
+.success-message h3 {
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 5px 0;
+}
+
+.success-message p {
+  color: white;
+  font-size: 14px;
+  margin: 0;
+}
+
+.close-success-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 5px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+}
+
+.fadeIn {
+  animation: fadeIn 0.3s forwards;
+}
+
+.fadeOut {
+  animation: fadeOut 0.3s forwards;
 }
