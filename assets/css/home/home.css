@@ -1,11 +1,11 @@
-/* ============================================
-   CÀI ĐẶT CHUNG VÀ RESET CSS
-   ============================================ */
+/* General & Reset CSS - Cài đặt chung và reset CSS */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
+
+body {
 
 body {
   font-family: "Segoe UI", Arial, sans-serif;

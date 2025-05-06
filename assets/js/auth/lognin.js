@@ -1,14 +1,15 @@
 /**
- * File: lognin.js
+ * File: lognin.js - Xử lý logic đăng nhập người dùng
  * Description: Handle user login logic, session management and login information storage - Xử lý logic đăng nhập người dùng, quản lý phiên đăng nhập và lưu thông tin đăng nhập
  */
 
+// Wait for DOM to load - Chờ DOM tải xong
 document.addEventListener('DOMContentLoaded', function () {
     // Get references to necessary DOM elements - Lấy tham chiếu đến các phần tử DOM cần thiết
     const loginForm = document.getElementById('loginForm');
     const messageContainer = document.getElementById('message-container');
 
-    // Check URL parameters to display "Registration successful" message - Kiểm tra tham số URL để hiển thị thông báo "Đăng ký thành công"
+    // Check URL parameters to display registration success message - Kiểm tra tham số URL để hiển thị thông báo đăng ký thành công
     // When user has just registered and is redirected to the login page - Khi người dùng vừa đăng ký xong và được chuyển hướng đến trang đăng nhập
     const urlParams = new URLSearchParams(window.location.search);
     const fromRegister = urlParams.get('registered');

@@ -41,18 +41,20 @@ if (form) {
         }
         if (!valid) return;
         let categories = JSON.parse(localStorage.getItem('categories') || '[]');
-        if (categories.some(c => c.code === code)) {
+        // Kiểm tra trùng mã chỉ khi thêm mới (không phải khi cập nhật)
+        const isUpdate = form.id === 'formUpdateCategory';
+        if (!isUpdate && categories.some(c => c.code === code)) {
             setError('categoryCode', 'Mã danh mục đã tồn tại');
             return;
         }
-
         // Kiểm tra tên danh mục trùng
-        if (categories.some(c => c.name.toLowerCase() === name.toLowerCase())) {
+        if (categories.some(c => (!isUpdate || c.code !== code) && c.name.toLowerCase() === name.toLowerCase())) {
             setError('categoryName', 'Tên danh mục đã tồn tại');
             return;
         }
 
-        const newCategory = { code, name, status };
+        // Thêm trường createdAt khi thêm mới danh mục
+        const newCategory = { code, name, status, createdAt: new Date().toISOString() };
         categories.push(newCategory);
         localStorage.setItem('categories', JSON.stringify(categories));
 
@@ -128,7 +130,7 @@ const itemsPerPage = 5;
 let filteredCategories = [];
 
 // Variables for sorting - Biến cho tính năng sắp xếp
-let sortField = 'code'; // Field to sort by (code or name)
+let sortField = 'code'; // Field to sort by (code, name, createdAt)
 let sortDirection = 'asc'; // Sort direction (asc or desc)
 
 // Handle category filtering - Xử lý lọc danh mục
@@ -149,11 +151,11 @@ function filterCategories() {
 
             // Filter by status - Lọc theo trạng thái
             let matchesStatus = true;
-            if (statusFilter === 'Đang hoạt động') {
+            if (statusFilter === 'active') {
                 matchesStatus = category.status === 'active';
-            } else if (statusFilter === 'Ngừng hoạt động') {
+            } else if (statusFilter === 'inactive') {
                 matchesStatus = category.status === 'inactive';
-            }
+            } // Nếu là 'all' thì luôn true
 
             return matchesSearch && matchesStatus;
         });
@@ -170,8 +172,11 @@ function sortCategories() {
         let valueA = a[sortField];
         let valueB = b[sortField];
 
-        // Handle string comparison - Xử lý so sánh chuỗi
-        if (typeof valueA === 'string') {
+        // Nếu sắp xếp theo createdAt thì chuyển về kiểu Date
+        if (sortField === 'createdAt') {
+            valueA = new Date(valueA);
+            valueB = new Date(valueB);
+        } else if (typeof valueA === 'string') {
             valueA = valueA.toLowerCase();
             valueB = valueB.toLowerCase();
         }
@@ -310,28 +315,49 @@ function bindDeleteButtons() {
     document.querySelectorAll('.icon-btn.delete').forEach(btn => {
         btn.onclick = function () {
             const categoryCode = this.getAttribute('data-id');
-
+            let categories = JSON.parse(localStorage.getItem('categories') || '[]');
+            const category = categories.find(c => c.code === categoryCode);
             // Check if category has products - Kiểm tra xem danh mục có sản phẩm không
             const products = JSON.parse(localStorage.getItem('products') || '[]');
-
-            // Find products in this category - Tìm các sản phẩm thuộc danh mục này
             const productsInCategory = products.filter(p => p.category === categoryCode);
-
-            // If at least 1 product exists, don't allow deletion - Nếu có ít nhất 1 sản phẩm thuộc danh mục, không cho phép xóa
             if (productsInCategory.length > 0) {
                 alert(`Không thể xóa danh mục này vì đã có ${productsInCategory.length} sản phẩm thuộc danh mục!`);
                 return;
             }
-
-            // If no products, proceed with deletion - Nếu không có sản phẩm nào, tiếp tục xóa danh mục
-            if (confirm('Bạn có chắc chắn muốn xóa danh mục này không?')) {
-                let categories = JSON.parse(localStorage.getItem('categories') || '[]');
-                categories = categories.filter(c => c.code !== categoryCode);
-                localStorage.setItem('categories', JSON.stringify(categories));
-                filterCategories();
-            }
+            // Hiển thị modal xác nhận xóa
+            const deleteModal = document.getElementById('deleteCategoryModal');
+            const categoryToDeleteName = document.getElementById('categoryToDeleteName');
+            deleteModal.style.display = 'block';
+            categoryToDeleteName.textContent = category ? `${category.code} - ${category.name}` : categoryCode;
+            // Lưu code vào dataset để xác nhận xóa
+            deleteModal.dataset.categoryCode = categoryCode;
         };
     });
+    // Xử lý nút đóng, hủy, xác nhận trong modal xóa
+    const deleteModal = document.getElementById('deleteCategoryModal');
+    if (deleteModal) {
+        document.getElementById('closeDeleteCategoryModal').onclick = () => {
+            deleteModal.style.display = 'none';
+        };
+        document.getElementById('cancelDeleteCategoryBtn').onclick = () => {
+            deleteModal.style.display = 'none';
+        };
+        document.getElementById('confirmDeleteCategoryBtn').onclick = () => {
+            const code = deleteModal.dataset.categoryCode;
+            let categories = JSON.parse(localStorage.getItem('categories') || '[]');
+            categories = categories.filter(c => c.code !== code);
+            localStorage.setItem('categories', JSON.stringify(categories));
+            deleteModal.style.display = 'none';
+            showNotification('Xóa danh mục thành công!');
+            filterCategories();
+        };
+        // Đóng modal khi click ra ngoài
+        window.onclick = function (event) {
+            if (event.target === deleteModal) {
+                deleteModal.style.display = 'none';
+            }
+        };
+    }
 }
 
 // Display categories in table - Hiển thị danh mục lên bảng
@@ -339,18 +365,18 @@ function renderCategoryTable() {
     // Initialize sample data if not exists - Khởi tạo dữ liệu mẫu nếu chưa có
     if (!localStorage.getItem('categories')) {
         const sampleCategories = [
-            { code: 'DM001', name: 'Điện thoại', status: 'active' },
-            { code: 'DM002', name: 'Laptop', status: 'active' },
-            { code: 'DM003', name: 'Máy tính bảng', status: 'active' },
-            { code: 'DM004', name: 'Phụ kiện', status: 'active' },
-            { code: 'DM005', name: 'Đồng hồ', status: 'inactive' },
-            { code: 'DM006', name: 'Quần áo', status: 'active' },
-            { code: 'DM007', name: 'Giày dép', status: 'inactive' },
-            { code: 'DM008', name: 'Túi xách', status: 'active' },
-            { code: 'DM009', name: 'Mỹ phẩm', status: 'inactive' },
-            { code: 'DM010', name: 'Thực phẩm', status: 'active' },
-            { code: 'DM011', name: 'Đồ gia dụng', status: 'active' },
-            { code: 'DM012', name: 'Sách', status: 'inactive' }
+            { code: 'DM001', name: 'Điện thoại', status: 'active', createdAt: new Date().toISOString() },
+            { code: 'DM002', name: 'Laptop', status: 'active', createdAt: new Date().toISOString() },
+            { code: 'DM003', name: 'Máy tính bảng', status: 'active', createdAt: new Date().toISOString() },
+            { code: 'DM004', name: 'Phụ kiện', status: 'active', createdAt: new Date().toISOString() },
+            { code: 'DM005', name: 'Đồng hồ', status: 'inactive', createdAt: new Date().toISOString() },
+            { code: 'DM006', name: 'Quần áo', status: 'active', createdAt: new Date().toISOString() },
+            { code: 'DM007', name: 'Giày dép', status: 'inactive', createdAt: new Date().toISOString() },
+            { code: 'DM008', name: 'Túi xách', status: 'active', createdAt: new Date().toISOString() },
+            { code: 'DM009', name: 'Mỹ phẩm', status: 'inactive', createdAt: new Date().toISOString() },
+            { code: 'DM010', name: 'Thực phẩm', status: 'active', createdAt: new Date().toISOString() },
+            { code: 'DM011', name: 'Đồ gia dụng', status: 'active', createdAt: new Date().toISOString() },
+            { code: 'DM012', name: 'Sách', status: 'inactive', createdAt: new Date().toISOString() }
         ];
         localStorage.setItem('categories', JSON.stringify(sampleCategories));
     }
@@ -381,6 +407,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 sortField = 'code';
             } else if (index === 1) {
                 sortField = 'name';
+            } else if (index === 2) {
+                sortField = 'createdAt';
             }
 
             // Toggle sort direction - Chuyển đổi hướng sắp xếp
@@ -406,7 +434,9 @@ function bindEditButtons() {
 
             if (category) {
                 const modalUpdate = document.getElementById('modalUpdateCategory');
-                document.getElementById('updateCategoryCode').value = category.code;
+                const codeInput = document.getElementById('updateCategoryCode');
+                codeInput.value = category.code;
+                codeInput.readOnly = false; // Cho phép sửa mã danh mục
                 document.getElementById('updateCategoryName').value = category.name;
 
                 if (category.status === 'active') {
@@ -432,14 +462,25 @@ function bindEditButtons() {
                 updateForm.onsubmit = function (e) {
                     e.preventDefault();
 
+                    const updatedCode = codeInput.value.trim();
                     const updatedName = document.getElementById('updateCategoryName').value.trim();
                     const updatedStatus = document.querySelector('input[name="updateCategoryStatus"]:checked')?.value || 'active';
 
+                    if (!updatedCode) {
+                        alert('Mã danh mục không được để trống');
+                        return;
+                    }
                     if (!updatedName) {
                         alert('Tên danh mục không được để trống');
                         return;
                     }
 
+                    // Kiểm tra mã danh mục trùng với các danh mục khác
+                    const isDuplicateCode = categories.some(c => c.code !== categoryCode && c.code.toLowerCase() === updatedCode.toLowerCase());
+                    if (isDuplicateCode) {
+                        alert('Mã danh mục đã tồn tại');
+                        return;
+                    }
                     // Kiểm tra tên danh mục trùng với các danh mục khác
                     const isDuplicateName = categories.some(c => c.code !== categoryCode && c.name.toLowerCase() === updatedName.toLowerCase());
                     if (isDuplicateName) {
@@ -450,9 +491,25 @@ function bindEditButtons() {
                     // Update category - Cập nhật danh mục
                     const categoryIndex = categories.findIndex(c => c.code === categoryCode);
                     if (categoryIndex !== -1) {
+                        categories[categoryIndex].code = updatedCode;
                         categories[categoryIndex].name = updatedName;
                         categories[categoryIndex].status = updatedStatus;
                         localStorage.setItem('categories', JSON.stringify(categories));
+
+                        // Nếu mã danh mục thay đổi, cập nhật cho các sản phẩm thuộc danh mục này
+                        if (updatedCode !== categoryCode) {
+                            let products = JSON.parse(localStorage.getItem('products') || '[]');
+                            let updated = false;
+                            products.forEach(p => {
+                                if (p.category === categoryCode) {
+                                    p.category = updatedCode;
+                                    updated = true;
+                                }
+                            });
+                            if (updated) {
+                                localStorage.setItem('products', JSON.stringify(products));
+                            }
+                        }
 
                         // Hiển thị thông báo cập nhật thành công
                         showNotification('Cập nhật danh mục thành công!');
@@ -588,7 +645,8 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    document.querySelectorAll('.dropdown-menu[aria-labelledby="filterStatus"] .dropdown-item').forEach(item => {
+    // Sửa lại phần dropdown lọc trạng thái
+    document.querySelectorAll('.dropdown-menu .dropdown-item').forEach(item => {
         item.addEventListener('click', function (e) {
             e.preventDefault();
             statusFilter = this.getAttribute('data-status');
@@ -641,7 +699,8 @@ document.addEventListener('DOMContentLoaded', function () {
             );
         }
 
-        if (statusFilter !== 'all') {
+        // Sửa lại phần lọc trạng thái
+        if (statusFilter && statusFilter !== 'all') {
             filtered = filtered.filter(product => product.status === statusFilter);
         }
 

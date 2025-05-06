@@ -9,7 +9,6 @@
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet"> <!-- Chuông -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
         integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOMt23cez/3paNdF+Z73e1rZ5V5qD9F9CXF4z8z" crossorigin="anonymous">
-    <script src="../../js/category_manager.js"></script>
 </head>
 
 <body>
@@ -60,9 +59,9 @@
             <div class="content">
                 <div class="toolbar">
                     <select>
-                        <option selected>Đang hoạt động</option>
-                        <option>Tất cả</option>
-                        <option>Ngừng hoạt động</option>
+                        <option value="active" selected>Đang hoạt động</option>
+                        <option value="all">Tất cả</option>
+                        <option value="inactive">Ngừng hoạt động</option>
                     </select>
                     <input type="text" placeholder="Tìm kiếm danh mục theo tên">
                 </div>
@@ -155,6 +154,18 @@
                             <button type="button" class="btn-cancel" id="btnCancelUpdateCategory">Hủy</button>
                             <button type="submit" class="btn-submit">Lưu</button>
                         </form>
+                    </div>
+                </div>
+                <!-- Modal xác nhận xóa danh mục -->
+                <div class="modal" id="deleteCategoryModal" style="display:none;">
+                    <div class="modal-content delete-content">
+                        <span class="close" id="closeDeleteCategoryModal">&times;</span>
+                        <h2>Xác nhận xóa</h2>
+                        <p>Bạn có chắc chắn muốn xóa danh mục <span id="categoryToDeleteName"></span> không?</p>
+                        <div class="modal-actions">
+                            <button id="cancelDeleteCategoryBtn" class="btn-cancel">Hủy</button>
+                            <button id="confirmDeleteCategoryBtn" class="btn-submit">Xóa</button>
+                        </div>
                     </div>
                 </div>
             </div>

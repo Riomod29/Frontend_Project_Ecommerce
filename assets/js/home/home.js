@@ -1,17 +1,8 @@
+// Main script for Home page - Script chính cho trang Home
+
 document.addEventListener('DOMContentLoaded', function () {
     // Check if user is logged in - Kiểm tra người dùng đã đăng nhập chưa
     checkUserLogin();
-
-    // // Handle "Giới thiệu" link click to scroll to New Arrival section - Xử lý click vào liên kết "Giới thiệu" để cuộn đến phần New Arrival
-    // const introLink = document.querySelector('.main-nav a:nth-child(2)');
-    // const newArrivalSection = document.getElementById('new-arrival');
-
-    // if (introLink && newArrivalSection) {
-    //     introLink.addEventListener('click', function (e) {
-    //         e.preventDefault();
-    //         newArrivalSection.scrollIntoView({ behavior: 'smooth' });
-    //     });
-    // }
 
     // Banner Animation - Hoạt ảnh cho banner
     // Data for main advertising banner - Dữ liệu cho banner quảng cáo chính
